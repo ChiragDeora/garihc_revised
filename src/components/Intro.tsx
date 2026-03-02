@@ -1,0 +1,262 @@
+"use client";
+
+import { useEffect, useRef, useState, useCallback } from "react";
+import { motion } from "framer-motion";
+
+const GARIHC = "GARIHC";
+const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&";
+
+function useTextScramble(text: string, delay: number = 0) {
+    const [display, setDisplay] = useState(text.split("").map(() => " "));
+    const [started, setStarted] = useState(false);
+
+    const start = useCallback(() => {
+        if (started) return;
+        setStarted(true);
+
+        const length = text.length;
+        const iterations = 10;
+        let frame = 0;
+
+        const timer = setInterval(() => {
+            setDisplay(
+                text.split("").map((char, i) => {
+                    if (frame - delay / 30 > i * 3) return char;
+                    return CHARS[Math.floor(Math.random() * CHARS.length)];
+                })
+            );
+            frame++;
+            if (frame > iterations * length + delay / 30) {
+                setDisplay(text.split(""));
+                clearInterval(timer);
+            }
+        }, 30);
+
+        return () => clearInterval(timer);
+    }, [text, delay, started]);
+
+    return { display, start };
+}
+
+export default function Intro() {
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [mounted, setMounted] = useState(false);
+    const { display, start } = useTextScramble(GARIHC, 300);
+    const mousePos = useRef({ x: 0.5, y: 0.5 });
+
+    useEffect(() => {
+        setMounted(true);
+        const timer = setTimeout(start, 500);
+        return () => clearTimeout(timer);
+    }, [start]);
+
+    // Animated grid
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+        let animFrame: number;
+        let time = 0;
+
+        const resize = () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        };
+        resize();
+        window.addEventListener("resize", resize);
+
+        const onMouse = (e: MouseEvent) => {
+            mousePos.current = {
+                x: e.clientX / window.innerWidth,
+                y: e.clientY / window.innerHeight,
+            };
+        };
+        window.addEventListener("mousemove", onMouse);
+
+        const draw = () => {
+            time += 0.003;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const spacing = 50;
+            const cols = Math.ceil(canvas.width / spacing) + 1;
+            const rows = Math.ceil(canvas.height / spacing) + 1;
+            const mx = mousePos.current.x * canvas.width;
+            const my = mousePos.current.y * canvas.height;
+
+            for (let i = 0; i < cols; i++) {
+                for (let j = 0; j < rows; j++) {
+                    const x = i * spacing;
+                    const y = j * spacing;
+                    const dx = x - mx;
+                    const dy = y - my;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    const wave = Math.sin(x * 0.01 + time) * Math.cos(y * 0.01 + time * 0.7);
+                    const proximity = Math.max(0, 1 - dist / 300);
+                    const opacity = 0.06 + wave * 0.03 + proximity * 0.15;
+
+                    ctx.beginPath();
+                    ctx.arc(x, y, 1, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(191, 166, 122, ${Math.max(0, Math.min(0.3, opacity))})`;
+                    ctx.fill();
+                }
+            }
+            animFrame = requestAnimationFrame(draw);
+        };
+        draw();
+
+        return () => {
+            cancelAnimationFrame(animFrame);
+            window.removeEventListener("resize", resize);
+            window.removeEventListener("mousemove", onMouse);
+        };
+    }, []);
+
+    return (
+        <section
+            style={{
+                minHeight: "100vh",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                position: "relative",
+                overflow: "hidden",
+                background: "#0A0A0A",
+            }}
+        >
+            <canvas
+                ref={canvasRef}
+                style={{ position: "absolute", inset: 0, pointerEvents: "none" }}
+            />
+
+            {/* Central glow */}
+            <motion.div
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 2, delay: 0.3 }}
+                style={{
+                    position: "absolute",
+                    width: 600,
+                    height: 600,
+                    background:
+                        "radial-gradient(circle, rgba(191,166,122,0.04) 0%, transparent 60%)",
+                    pointerEvents: "none",
+                }}
+            />
+
+            {/* Letters */}
+            <div style={{ position: "relative", zIndex: 1 }}>
+                <h1
+                    style={{
+                        fontFamily: "var(--font-cormorant), serif",
+                        fontSize: "clamp(3.5rem, 12vw, 9rem)",
+                        fontWeight: 300,
+                        letterSpacing: "0.35em",
+                        margin: 0,
+                        paddingRight: "0.35em",
+                        color: "#F5F5F0",
+                    }}
+                >
+                    {display.map((char, i) => (
+                        <motion.span
+                            key={i}
+                            initial={{ opacity: 0 }}
+                            animate={mounted ? { opacity: 1 } : {}}
+                            transition={{ duration: 0.1, delay: 0.5 + i * 0.05 }}
+                            style={{
+                                display: "inline-block",
+                                minWidth: "0.6em",
+                                textAlign: "center",
+                            }}
+                        >
+                            {char}
+                        </motion.span>
+                    ))}
+                </h1>
+            </div>
+
+            {/* Subtitle */}
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={mounted ? { opacity: 1 } : {}}
+                transition={{ duration: 1.2, delay: 2 }}
+                style={{
+                    position: "relative",
+                    zIndex: 1,
+                    marginTop: "2rem",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "1.5rem",
+                }}
+            >
+                <div
+                    style={{
+                        width: 40,
+                        height: 1,
+                        background: "linear-gradient(90deg, transparent, #BFA67A)",
+                    }}
+                />
+                <p
+                    style={{
+                        fontFamily: "var(--font-outfit), sans-serif",
+                        fontSize: "clamp(0.65rem, 1.2vw, 0.85rem)",
+                        fontWeight: 300,
+                        letterSpacing: "0.3em",
+                        textTransform: "uppercase",
+                        color: "var(--text-secondary)",
+                        margin: 0,
+                    }}
+                >
+                    Strategy &middot; Technology &middot; Taste
+                </p>
+                <div
+                    style={{
+                        width: 40,
+                        height: 1,
+                        background: "linear-gradient(90deg, #BFA67A, transparent)",
+                    }}
+                />
+            </motion.div>
+
+            {/* Scroll indicator */}
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={mounted ? { opacity: 1 } : {}}
+                transition={{ duration: 1, delay: 2.8 }}
+                style={{
+                    position: "absolute",
+                    bottom: "2.5rem",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    zIndex: 1,
+                }}
+            >
+                <span
+                    style={{
+                        fontFamily: "var(--font-outfit), sans-serif",
+                        fontSize: "0.6rem",
+                        fontWeight: 400,
+                        letterSpacing: "0.2em",
+                        textTransform: "uppercase",
+                        color: "var(--text-muted)",
+                        marginBottom: "0.75rem",
+                    }}
+                >
+                    Scroll
+                </span>
+                <motion.div
+                    style={{
+                        width: 1,
+                        height: 40,
+                        background: "linear-gradient(180deg, #BFA67A, transparent)",
+                        transformOrigin: "top",
+                    }}
+                    animate={{ scaleY: [0, 1, 0] }}
+                    transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                />
+            </motion.div>
+        </section>
+    );
+}
