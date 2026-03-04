@@ -382,19 +382,11 @@ export default function Intro() {
                     >
                         <a
                             href="#contact"
+                            className="btn-accent"
                             style={{
-                                fontFamily: "var(--font-outfit), sans-serif",
                                 fontSize: "0.65rem",
-                                fontWeight: 400,
-                                textTransform: "uppercase",
                                 letterSpacing: "0.2em",
-                                color: "#FFFFFF",
-                                textDecoration: "none",
-                                background: "var(--accent-warm)",
-                                border: "1px solid var(--accent-warm)",
                                 padding: "14px 36px",
-                                borderRadius: 4,
-                                transition: "all 0.4s ease",
                             }}
                             onMouseEnter={(e) => {
                                 e.currentTarget.style.background = "transparent";

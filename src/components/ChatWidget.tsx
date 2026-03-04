@@ -22,13 +22,27 @@ export default function ChatWidget() {
     const [hasInteracted, setHasInteracted] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
-    // Show tooltip on first visit
+    // Show tooltip after delay or on scroll (understated - not on immediate load)
     useEffect(() => {
         const seen = sessionStorage.getItem("garihc-chat-tooltip");
-        if (!seen) {
-            const timer = setTimeout(() => setShowTooltip(true), 3000);
-            return () => clearTimeout(timer);
-        }
+        if (seen) return;
+
+        const delayMs = 7000; // 7 seconds
+        const scrollThreshold = 350; // show after user scrolls this far
+
+        const timer = setTimeout(() => setShowTooltip(true), delayMs);
+
+        const onScroll = () => {
+            if (window.scrollY >= scrollThreshold) {
+                setShowTooltip(true);
+            }
+        };
+        window.addEventListener("scroll", onScroll, { passive: true });
+
+        return () => {
+            clearTimeout(timer);
+            window.removeEventListener("scroll", onScroll);
+        };
     }, []);
 
     useEffect(() => {

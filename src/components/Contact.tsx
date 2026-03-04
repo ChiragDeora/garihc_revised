@@ -228,21 +228,9 @@ export default function Contact() {
         >
           <a
             href="mailto:info@garihc.com"
+            className="btn-accent"
             style={{
-              fontFamily: "var(--font-outfit), sans-serif",
-              fontSize: "0.7rem",
-              fontWeight: 400,
-              textTransform: "uppercase",
-              letterSpacing: "0.25em",
-              border: "1px solid var(--accent-warm)",
               padding: "18px 50px",
-              color: "#FFFFFF",
-              background: "var(--accent-warm)",
-              textDecoration: "none",
-              display: "inline-block",
-              borderRadius: 4,
-              transition:
-                "all 0.5s cubic-bezier(0.16,1,0.3,1)",
             }}
             onMouseEnter={(e) => {
               const t = e.currentTarget;

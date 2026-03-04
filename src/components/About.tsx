@@ -1,42 +1,7 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-
-const stats = [
-  { number: 4, suffix: "+", label: "Years Freelancing" },
-  { number: 8, suffix: "+", label: "Projects Delivered" },
-  { number: 3, suffix: "+", label: "Industries Served" },
-];
-
-function Counter({
-  target,
-  suffix,
-  active,
-}: {
-  target: number;
-  suffix: string;
-  active: boolean;
-}) {
-  const [count, setCount] = useState(0);
-  useEffect(() => {
-    if (!active) return;
-    let n = 0;
-    const step = Math.max(Math.floor(1500 / target), 30);
-    const timer = setInterval(() => {
-      n++;
-      setCount(n);
-      if (n >= target) clearInterval(timer);
-    }, step);
-    return () => clearInterval(timer);
-  }, [active, target]);
-  return (
-    <>
-      {active ? count : 0}
-      {suffix}
-    </>
-  );
-}
 
 export default function About() {
   const ref = useRef(null);
@@ -133,76 +98,6 @@ export default function About() {
             actually runs, find what&apos;s broken, then build the fix. Not the
             other way around.
           </p>
-        </motion.div>
-
-        {/* Stats */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : {}}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          style={{
-            borderTop: "1px solid rgba(255,255,255,0.06)",
-            borderBottom: "1px solid rgba(255,255,255,0.06)",
-            padding: "2.5rem 0",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "flex-start",
-              gap: "4rem",
-              flexWrap: "wrap",
-            }}
-          >
-            {stats.map((stat, i) => (
-              <div
-                key={stat.label}
-                style={{ display: "flex", alignItems: "center" }}
-              >
-                {i > 0 && (
-                  <div
-                    style={{
-                      width: 1,
-                      height: 50,
-                      background: "rgba(255,255,255,0.06)",
-                      marginRight: "4rem",
-                    }}
-                  />
-                )}
-                <div style={{ textAlign: "center", minWidth: 100 }}>
-                  <div
-                    style={{
-                      fontFamily: "var(--font-cormorant), serif",
-                      fontSize: "3.5rem",
-                      fontWeight: 300,
-                      lineHeight: 1,
-                      color: "#BFA67A",
-                    }}
-                  >
-                    <Counter
-                      target={stat.number}
-                      suffix={stat.suffix}
-                      active={isInView}
-                    />
-                  </div>
-                  <div
-                    style={{
-                      fontFamily: "var(--font-outfit), sans-serif",
-                      fontSize: "0.65rem",
-                      fontWeight: 400,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.15em",
-                      marginTop: "0.75rem",
-                      color: "var(--text-secondary)",
-                    }}
-                  >
-                    {stat.label}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
         </motion.div>
       </div>
     </section>

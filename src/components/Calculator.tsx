@@ -601,21 +601,8 @@ export default function Calculator() {
                         <div style={{ textAlign: "center" }}>
                             <a
                                 href={mailtoLink}
-                                style={{
-                                    fontFamily: "var(--font-outfit), sans-serif",
-                                    fontSize: "0.7rem",
-                                    fontWeight: 400,
-                                    textTransform: "uppercase",
-                                    letterSpacing: "0.25em",
-                                    padding: "18px 44px",
-                                    color: "#FFFFFF",
-                                    background: "var(--accent-warm)",
-                                    border: "1px solid var(--accent-warm)",
-                                    borderRadius: 4,
-                                    textDecoration: "none",
-                                    display: "inline-block",
-                                    transition: "all 0.4s cubic-bezier(0.16,1,0.3,1)",
-                                }}
+                                className="btn-accent"
+                                style={{ padding: "18px 44px" }}
                                 onMouseEnter={(e) => {
                                     const t = e.currentTarget;
                                     t.style.background = "transparent";
