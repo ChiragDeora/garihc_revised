@@ -11,6 +11,8 @@
   --text-muted: #555555;
   --accent: #BFA67A;
   --accent-dim: rgba(191, 166, 122, 0.15);
+  --accent-warm: #C4663A;
+  --accent-warm-dim: rgba(196, 102, 58, 0.15);
   --border: rgba(255, 255, 255, 0.08);
   --border-hover: rgba(255, 255, 255, 0.15);
   --glass: rgba(255, 255, 255, 0.04);
@@ -107,6 +109,30 @@ body {
   border-color: var(--border-hover);
   transform: translateY(-4px);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+/* ─── Accent Button ─── */
+.btn-accent {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  padding: 16px 44px;
+  color: #FFFFFF;
+  background: var(--accent-warm);
+  border: 1px solid var(--accent-warm);
+  border-radius: 4px;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-accent:hover {
+  background: transparent;
+  color: var(--accent-warm);
+  box-shadow: 0 0 30px rgba(196, 102, 58, 0.2);
 }
 
 /* ─── Responsive ─── */

@@ -135,6 +135,29 @@ export default function AISpotlight() {
             We identify where intelligence creates compounding value. Quietly,
             reliably, at scale.
           </p>
+          <a
+            href="/calculator"
+            style={{
+              fontFamily: "var(--font-outfit), sans-serif",
+              fontSize: "0.75rem",
+              fontWeight: 400,
+              textTransform: "uppercase",
+              letterSpacing: "0.15em",
+              color: "var(--accent-warm)",
+              textDecoration: "none",
+              marginTop: "1.5rem",
+              display: "inline-block",
+              transition: "opacity 0.3s",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.opacity = "0.7";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.opacity = "1";
+            }}
+          >
+            Calculate Your AI Savings →
+          </a>
         </div>
 
         {/* Right – glass cards */}

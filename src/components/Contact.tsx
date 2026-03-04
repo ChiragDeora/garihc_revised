@@ -179,7 +179,7 @@ export default function Contact() {
           </a>
         </motion.div>
 
-        {/* Social links — commented out for now
+        {/* Social links - commented out for now
         <div
           style={{
             width: 1,
@@ -234,27 +234,28 @@ export default function Contact() {
               fontWeight: 400,
               textTransform: "uppercase",
               letterSpacing: "0.25em",
-              border: "1px solid rgba(191,166,122,0.3)",
+              border: "1px solid var(--accent-warm)",
               padding: "18px 50px",
-              color: "#BFA67A",
-              background: "transparent",
+              color: "#FFFFFF",
+              background: "var(--accent-warm)",
               textDecoration: "none",
               display: "inline-block",
+              borderRadius: 4,
               transition:
                 "all 0.5s cubic-bezier(0.16,1,0.3,1)",
             }}
             onMouseEnter={(e) => {
               const t = e.currentTarget;
-              t.style.background = "#BFA67A";
-              t.style.color = "#0A0A0A";
-              t.style.borderColor = "#BFA67A";
-              t.style.boxShadow = "0 0 40px rgba(191,166,122,0.2)";
+              t.style.background = "transparent";
+              t.style.color = "var(--accent-warm)";
+              t.style.borderColor = "var(--accent-warm)";
+              t.style.boxShadow = "0 0 40px rgba(196,102,58,0.2)";
             }}
             onMouseLeave={(e) => {
               const t = e.currentTarget;
-              t.style.background = "transparent";
-              t.style.color = "#BFA67A";
-              t.style.borderColor = "rgba(191,166,122,0.3)";
+              t.style.background = "var(--accent-warm)";
+              t.style.color = "#FFFFFF";
+              t.style.borderColor = "var(--accent-warm)";
               t.style.boxShadow = "none";
             }}
           >

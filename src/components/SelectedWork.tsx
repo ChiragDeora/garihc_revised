@@ -111,7 +111,7 @@ function LiveSiteEmbed({ url, name }: { url: string; name: string }) {
       {!loaded && !error && (
         <div
           style={{
-            height: 450,
+            height: 580,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -139,7 +139,7 @@ function LiveSiteEmbed({ url, name }: { url: string; name: string }) {
           sandbox="allow-scripts allow-same-origin"
           style={{
             width: "100%",
-            height: loaded ? 450 : 0,
+            height: loaded ? 580 : 0,
             border: "none",
             display: loaded ? "block" : "none",
             background: "#FFFFFF",
@@ -224,7 +224,7 @@ export default function SelectedWork() {
       ref={ref}
       style={{ background: "#0A0A0A", padding: "160px 1.5rem" }}
     >
-      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+      <div style={{ maxWidth: 1280, margin: "0 auto", width: "100%" }}>
         {/* Header */}
         <div
           style={{

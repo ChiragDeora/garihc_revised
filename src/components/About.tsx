@@ -86,11 +86,7 @@ export default function About() {
             lineHeight: 1.3,
           }}
         >
-          Built from the ground up.
-          <br />
-          <span style={{ color: "var(--text-secondary)" }}>
-            Always evolving.
-          </span>
+          We don&apos;t advise. We build.
         </motion.h2>
 
         {/* Description */}
@@ -108,17 +104,19 @@ export default function About() {
           <p
             style={{
               fontFamily: "var(--font-outfit), sans-serif",
-              fontSize: "1rem",
+              fontSize: "1.1rem",
               fontWeight: 300,
               lineHeight: 1.8,
               margin: 0,
-              color: "rgba(245,245,240,0.7)",
+              color: "rgba(245,245,240,0.85)",
               maxWidth: 600,
             }}
           >
-            GARIHC started over four years ago, born out of agency experience
-            building websites and digital products for clients across
-            industries. We went independent to do things differently.
+            GARIHC is a technology consultancy for businesses that need more
+            than a recommendation - they need the solution built and shipped.
+            AI systems, custom software, product development, go-to-market
+            strategy. Industries range from manufacturing to consumer brands
+            to industrial distribution.
           </p>
           <p
             style={{
@@ -127,28 +125,13 @@ export default function About() {
               fontWeight: 300,
               lineHeight: 1.8,
               margin: 0,
-              color: "rgba(245,245,240,0.7)",
+              color: "rgba(245,245,240,0.6)",
               maxWidth: 600,
             }}
           >
-            What started as web development evolved into something broader.
-            We introduced AI workflow automation into our services, helping
-            businesses not just look better but operate smarter. Custom AI
-            agents, intelligent dashboards, automated pipelines.
-          </p>
-          <p
-            style={{
-              fontFamily: "var(--font-outfit), sans-serif",
-              fontSize: "1rem",
-              fontWeight: 300,
-              lineHeight: 1.8,
-              margin: 0,
-              color: "rgba(245,245,240,0.7)",
-              maxWidth: 600,
-            }}
-          >
-            We work with select clients who want to combine sharp design
-            with real technology. If that sounds like you, let&apos;s talk.
+            Every engagement starts the same way: understand how the business
+            actually runs, find what&apos;s broken, then build the fix. Not the
+            other way around.
           </p>
         </motion.div>
 

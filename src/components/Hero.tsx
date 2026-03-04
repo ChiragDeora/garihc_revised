@@ -20,9 +20,10 @@ export default function Hero() {
             margin: 0,
           }}
         >
-          Strategy. Technology.
+          We understand your business
           <br />
-          <span className="gradient-gold">Taste.</span>
+          and build the{" "}
+          <span className="gradient-gold">complete solution.</span>
         </h1>
 
         {/* Subline */}
@@ -36,12 +37,41 @@ export default function Hero() {
             lineHeight: 1.6,
           }}
         >
-          AI-powered consulting for brands with ambition.
+          Strategy, AI, development, and design - from one person who does it all.
         </p>
 
         {/* Button */}
         <div className="hero-animate hero-animate-delay-4" style={{ marginTop: "2.5rem" }}>
-          <a href="#contact" className="btn-primary">
+          <a
+            href="#contact"
+            style={{
+              fontFamily: "var(--font-outfit), sans-serif",
+              fontSize: "0.7rem",
+              fontWeight: 400,
+              textTransform: "uppercase",
+              letterSpacing: "0.25em",
+              padding: "16px 44px",
+              color: "#FFFFFF",
+              background: "var(--accent-warm)",
+              textDecoration: "none",
+              display: "inline-block",
+              borderRadius: 4,
+              transition: "all 0.4s cubic-bezier(0.16,1,0.3,1)",
+              border: "1px solid var(--accent-warm)",
+            }}
+            onMouseEnter={(e) => {
+              const t = e.currentTarget;
+              t.style.background = "transparent";
+              t.style.color = "var(--accent-warm)";
+              t.style.boxShadow = "0 0 30px rgba(196,102,58,0.2)";
+            }}
+            onMouseLeave={(e) => {
+              const t = e.currentTarget;
+              t.style.background = "var(--accent-warm)";
+              t.style.color = "#FFFFFF";
+              t.style.boxShadow = "none";
+            }}
+          >
             <span>Inquire</span>
           </a>
         </div>
@@ -54,10 +84,34 @@ export default function Hero() {
       >
         <img
           src="/hero-bg.png"
-          alt="GARIHC — Strategy, Technology, Taste"
+          alt="GARIHC - Strategy, AI, Development, and Design"
           className="hero-image"
           style={{ width: "100%" }}
         />
+      </div>
+
+      {/* Client logo strip */}
+      <div
+        className="hero-animate hero-animate-delay-5"
+        style={{
+          borderTop: "1px solid #E8E5E0",
+          padding: "1.5rem 0",
+          textAlign: "center",
+        }}
+      >
+        <p
+          style={{
+            fontFamily: "var(--font-outfit), sans-serif",
+            fontSize: "0.7rem",
+            fontWeight: 400,
+            textTransform: "uppercase",
+            letterSpacing: "0.2em",
+            color: "#AAAAAA",
+            margin: 0,
+          }}
+        >
+          SPCO &nbsp;·&nbsp; Foal &amp; Pony &nbsp;·&nbsp; Stallion Eyewear &nbsp;·&nbsp; Deora Polyplast
+        </p>
       </div>
 
       {/* Scroll indicator */}

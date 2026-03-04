@@ -18,8 +18,11 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "GARIHC — Guiding Ambitions, Realizing Innovations, Harnessing Creativity",
+  title: "GARIHC - Strategy. Technology. Taste.",
   description: "AI-powered consulting for brands with ambition. Strategy, technology, and taste.",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({
