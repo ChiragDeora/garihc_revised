@@ -1,6 +1,20 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+
+const COUNTRIES = [
+    { code: "IN", name: "India", currencyCode: "INR", locale: "en-IN", defaultSalary: 800000 },
+    { code: "US", name: "United States", currencyCode: "USD", locale: "en-US", defaultSalary: 50000 },
+    { code: "GB", name: "United Kingdom", currencyCode: "GBP", locale: "en-GB", defaultSalary: 40000 },
+    { code: "AE", name: "United Arab Emirates", currencyCode: "AED", locale: "en-AE", defaultSalary: 180000 },
+    { code: "SG", name: "Singapore", currencyCode: "SGD", locale: "en-SG", defaultSalary: 65000 },
+    { code: "AU", name: "Australia", currencyCode: "AUD", locale: "en-AU", defaultSalary: 75000 },
+    { code: "DE", name: "Germany", currencyCode: "EUR", locale: "de-DE", defaultSalary: 45000 },
+    { code: "FR", name: "France", currencyCode: "EUR", locale: "fr-FR", defaultSalary: 45000 },
+    { code: "CA", name: "Canada", currencyCode: "CAD", locale: "en-CA", defaultSalary: 55000 },
+    { code: "NL", name: "Netherlands", currencyCode: "EUR", locale: "nl-NL", defaultSalary: 48000 },
+    { code: "OTHER", name: "Other", currencyCode: "USD", locale: "en-US", defaultSalary: 50000 },
+];
 
 const industries = [
     "Manufacturing",
@@ -24,13 +38,54 @@ const automationTasks = [
     { name: "Quality Checks & Compliance", rate: 0.45 },
 ];
 
+const DEFAULT_CURRENCY = { code: "USD", locale: "en-US", defaultSalary: 50000 };
+
 export default function Calculator() {
     const [step, setStep] = useState(1);
+    const [country, setCountry] = useState("");
     const [industry, setIndustry] = useState("");
     const [teamSize, setTeamSize] = useState(5);
     const [avgSalary, setAvgSalary] = useState(50000);
     const [manualHours, setManualHours] = useState(10);
     const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
+
+    // Show default cursor on calculator (site uses custom cursor elsewhere)
+    useEffect(() => {
+        const prev = document.body.style.cursor;
+        document.body.style.cursor = "auto";
+        return () => {
+            document.body.style.cursor = prev;
+        };
+    }, []);
+
+    const currency = useMemo(() => {
+        if (!country) return DEFAULT_CURRENCY;
+        const c = COUNTRIES.find((x) => x.code === country);
+        return c
+            ? { code: c.currencyCode, locale: c.locale, defaultSalary: c.defaultSalary }
+            : DEFAULT_CURRENCY;
+    }, [country]);
+
+    const formatCurrency = useMemo(
+        () =>
+            new Intl.NumberFormat(currency.locale, {
+                style: "currency",
+                currency: currency.code,
+                maximumFractionDigits: 0,
+            }),
+        [currency.locale, currency.code]
+    );
+
+    const currencyLabel = useMemo(() => {
+        const parts = formatCurrency.formatToParts(0);
+        return parts.find((p) => p.type === "currency")?.value ?? currency.code;
+    }, [formatCurrency, currency.code]);
+
+    const selectCountry = (code: string) => {
+        setCountry(code);
+        const c = COUNTRIES.find((x) => x.code === code);
+        if (c) setAvgSalary(c.defaultSalary);
+    };
 
     const toggleTask = (taskName: string) => {
         setSelectedTasks((prev) =>
@@ -67,14 +122,19 @@ export default function Calculator() {
     }, [teamSize, avgSalary, manualHours, selectedTasks]);
 
     const canProceed = () => {
-        if (step === 1) return industry !== "";
-        if (step === 4) return selectedTasks.length > 0;
+        if (step === 1) return country !== "";
+        if (step === 2) return industry !== "";
+        if (step === 5) return selectedTasks.length > 0;
         return true;
     };
 
-    const mailtoLink = `mailto:info@garihc.com?subject=Free AI Audit Request&body=Hi GARIHC,%0A%0AI'd like a free AI audit for my business.%0A%0AIndustry: ${encodeURIComponent(industry)}%0ATeam size: ${teamSize}%0AEstimated annual savings: $${results.dollarsSaved.toLocaleString()}%0AEstimated hours saved: ${results.hoursSaved.toLocaleString()}%0A%0ALooking forward to hearing from you.`;
+    const countryName = country
+        ? (COUNTRIES.find((c) => c.code === country)?.name ?? "")
+        : "";
 
-    const stepLabel = ["Industry", "Team Size", "Manual Hours", "Tasks", "Results"];
+    const mailtoLink = `mailto:info@garihc.com?subject=Free AI Audit Request&body=Hi GARIHC,%0A%0AI'd like a free AI audit for my business.%0A%0ACountry: ${encodeURIComponent(countryName)}%0AIndustry: ${encodeURIComponent(industry)}%0ATeam size: ${teamSize}%0AEstimated annual savings: ${encodeURIComponent(formatCurrency.format(results.dollarsSaved))}%0AEstimated hours saved: ${results.hoursSaved.toLocaleString()}%0A%0ALooking forward to hearing from you.`;
+
+    const stepLabel = ["Country", "Industry", "Team Size", "Manual Hours", "Tasks", "Results"];
 
     return (
         <div
@@ -127,7 +187,7 @@ export default function Calculator() {
                         marginBottom: "3rem",
                     }}
                 >
-                    {[1, 2, 3, 4, 5].map((s) => (
+                    {[1, 2, 3, 4, 5, 6].map((s) => (
                         <div
                             key={s}
                             style={{
@@ -158,11 +218,74 @@ export default function Calculator() {
                         marginBottom: "0.5rem",
                     }}
                 >
-                    Step {step} of 5 - {stepLabel[step - 1]}
+                    Step {step} of 6 - {stepLabel[step - 1]}
                 </p>
 
-                {/* Step 1: Industry */}
+                {/* Step 1: Country */}
                 {step === 1 && (
+                    <div>
+                        <h2
+                            style={{
+                                fontFamily: "var(--font-cormorant), serif",
+                                fontSize: "1.6rem",
+                                fontWeight: 400,
+                                color: "#F5F5F0",
+                                margin: "0 0 2rem 0",
+                            }}
+                        >
+                            Where is your business based?
+                        </h2>
+                        <p
+                            style={{
+                                fontFamily: "var(--font-outfit), sans-serif",
+                                fontSize: "0.85rem",
+                                fontWeight: 300,
+                                color: "var(--text-muted)",
+                                margin: "0 0 1.5rem 0",
+                            }}
+                        >
+                            We&apos;ll show your savings in your local currency.
+                        </p>
+                        <div
+                            style={{
+                                display: "grid",
+                                gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+                                gap: 12,
+                            }}
+                        >
+                            {COUNTRIES.map((c) => (
+                                <button
+                                    key={c.code}
+                                    onClick={() => selectCountry(c.code)}
+                                    style={{
+                                        fontFamily: "var(--font-outfit), sans-serif",
+                                        fontSize: "0.85rem",
+                                        fontWeight: 300,
+                                        padding: "16px 20px",
+                                        borderRadius: 12,
+                                        border:
+                                            country === c.code
+                                                ? "1px solid var(--accent-warm)"
+                                                : "1px solid rgba(255,255,255,0.06)",
+                                        background:
+                                            country === c.code
+                                                ? "rgba(196,102,58,0.1)"
+                                                : "rgba(255,255,255,0.03)",
+                                        color: country === c.code ? "#F5F5F0" : "var(--text-secondary)",
+                                        cursor: "pointer",
+                                        textAlign: "left",
+                                        transition: "all 0.3s ease",
+                                    }}
+                                >
+                                    {c.name}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Step 2: Industry */}
+                {step === 2 && (
                     <div>
                         <h2
                             style={{
@@ -213,8 +336,8 @@ export default function Calculator() {
                     </div>
                 )}
 
-                {/* Step 2: Team size */}
-                {step === 2 && (
+                {/* Step 3: Team size */}
+                {step === 3 && (
                     <div>
                         <h2
                             style={{
@@ -279,7 +402,7 @@ export default function Calculator() {
                                     marginBottom: "0.75rem",
                                 }}
                             >
-                                Average annual salary per person ($)
+                                Average annual salary per person ({currencyLabel})
                             </label>
                             <input
                                 type="number"
@@ -302,8 +425,8 @@ export default function Calculator() {
                     </div>
                 )}
 
-                {/* Step 3: Manual hours */}
-                {step === 3 && (
+                {/* Step 4: Manual hours */}
+                {step === 4 && (
                     <div>
                         <h2
                             style={{
@@ -373,8 +496,8 @@ export default function Calculator() {
                     </div>
                 )}
 
-                {/* Step 4: Tasks */}
-                {step === 4 && (
+                {/* Step 5: Tasks */}
+                {step === 5 && (
                     <div>
                         <h2
                             style={{
@@ -447,8 +570,8 @@ export default function Calculator() {
                     </div>
                 )}
 
-                {/* Step 5: Results */}
-                {step === 5 && (
+                {/* Step 6: Results */}
+                {step === 6 && (
                     <div>
                         <h2
                             style={{
@@ -474,7 +597,7 @@ export default function Calculator() {
                             {[
                                 {
                                     label: "Annual Savings",
-                                    value: `$${results.dollarsSaved.toLocaleString()}`,
+                                    value: formatCurrency.format(results.dollarsSaved),
                                 },
                                 {
                                     label: "Hours Saved / Year",
@@ -571,7 +694,7 @@ export default function Calculator() {
                                             color: "#BFA67A",
                                         }}
                                     >
-                                        ${results.monthlyDollarsSaved.toLocaleString()}/mo
+                                        {formatCurrency.format(results.monthlyDollarsSaved)}/mo
                                     </span>
                                 </div>
                                 <div>
@@ -623,7 +746,7 @@ export default function Calculator() {
                 )}
 
                 {/* Navigation buttons */}
-                {step < 5 && (
+                {step < 6 && (
                     <div
                         style={{
                             display: "flex",
@@ -676,16 +799,17 @@ export default function Calculator() {
                                 transition: "all 0.3s",
                             }}
                         >
-                            {step === 4 ? "See My Savings" : "Next"}
+                            {step === 5 ? "See My Savings" : "Next"}
                         </button>
                     </div>
                 )}
 
-                {step === 5 && (
+                {step === 6 && (
                     <div style={{ textAlign: "center", marginTop: "2rem" }}>
                         <button
                             onClick={() => {
                                 setStep(1);
+                                setCountry("");
                                 setIndustry("");
                                 setTeamSize(5);
                                 setAvgSalary(50000);

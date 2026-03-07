@@ -5,6 +5,7 @@ export default function Footer() {
 
   return (
     <footer
+      className="site-footer"
       style={{
         background: "#0A0A0A",
         position: "relative",
@@ -14,6 +15,7 @@ export default function Footer() {
     >
       {/* CTA Pill */}
       <div
+        className="footer-cta"
         style={{
           display: "flex",
           justifyContent: "center",
@@ -23,6 +25,7 @@ export default function Footer() {
         }}
       >
         <div
+          className="footer-cta-pill"
           style={{
             display: "flex",
             alignItems: "center",
@@ -83,6 +86,7 @@ export default function Footer() {
 
       {/* Giant GARIHC text */}
       <div
+        className="footer-brand"
         style={{
           position: "relative",
           zIndex: 1,
@@ -107,11 +111,7 @@ export default function Footer() {
             transform: "translateY(15%)",
           }}
         >
-          GA
-          <span style={{ color: "rgba(255,255,255,0.2)" }}>-</span>
-          RI
-          <span style={{ color: "rgba(255,255,255,0.2)" }}>-</span>
-          HC
+          GARIHC
           <span
             style={{
               fontSize: "0.3em",
@@ -123,6 +123,32 @@ export default function Footer() {
             ™
           </span>
         </h2>
+      </div>
+
+      {/* Footer bottom: copyright / legal */}
+      <div
+        className="footer-bottom"
+        style={{
+          position: "relative",
+          zIndex: 2,
+          textAlign: "center",
+          padding: "2rem 1.5rem",
+          paddingBottom: "max(2rem, calc(1rem + env(safe-area-inset-bottom)))",
+        }}
+      >
+        <p
+          style={{
+            fontFamily: "var(--font-outfit), sans-serif",
+            fontSize: "0.65rem",
+            fontWeight: 400,
+            textTransform: "uppercase",
+            letterSpacing: "0.2em",
+            color: "var(--text-muted)",
+            margin: 0,
+          }}
+        >
+          © {new Date().getFullYear()} GARIHC. All rights reserved.
+        </p>
       </div>
     </footer>
   );

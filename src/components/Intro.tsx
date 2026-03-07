@@ -148,6 +148,7 @@ export default function Intro() {
 
     return (
         <section
+            className="intro-hero"
             style={{
                 minHeight: "100vh",
                 height: "100vh",
@@ -159,7 +160,6 @@ export default function Intro() {
                 position: "relative",
                 overflow: "hidden",
                 background: "#0A0A0A",
-                padding: "3rem 2rem",
                 boxSizing: "border-box",
             }}
         >
@@ -184,16 +184,19 @@ export default function Intro() {
             />
 
             {/* GARIHC Letters */}
-            <div style={{ position: "relative", zIndex: 1, transform: "translateX(0.12em)" }}>
+            <div style={{ position: "relative", zIndex: 1, width: "100%", textAlign: "center" }}>
                 <h1
+                    className="hero-title"
                     style={{
                         fontFamily: "var(--font-cormorant), serif",
-                        fontSize: "clamp(3.5rem, 12vw, 9rem)",
+                        fontSize: "clamp(4.25rem, 15vw, 11rem)",
                         fontWeight: 300,
                         letterSpacing: "0.35em",
                         margin: 0,
-                        paddingRight: "0.35em",
+                        paddingLeft: "0.18em",
+                        paddingRight: "0.18em",
                         color: "#F5F5F0",
+                        display: "inline-block",
                     }}
                 >
                     {display.map((char, i) => (
@@ -371,6 +374,7 @@ export default function Intro() {
             <AnimatePresence>
                 {phase === "reveal" && (
                     <motion.div
+                        className="hero-cta-wrap"
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 1.2 }}

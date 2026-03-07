@@ -154,9 +154,118 @@ body {
   width: 50%;
 }
 
-/* ─── Responsive ─── */
+/* ─── Responsive / Mobile ─── */
 @media (max-width: 768px) {
   body {
     cursor: auto;
+  }
+}
+
+/* Intro hero: tighter padding and typography on small screens */
+.intro-hero {
+  padding: 3rem 2rem;
+}
+@media (max-width: 768px) {
+  .intro-hero {
+    padding: 2rem 1.25rem;
+  }
+}
+@media (max-width: 480px) {
+  .intro-hero {
+    padding: 1.5rem 1rem;
+  }
+  .intro-hero .hero-title {
+    font-size: 4.1rem !important;
+    letter-spacing: 0.15em !important;
+  }
+  .intro-hero .hero-cta-wrap {
+    margin-top: 1.75rem !important;
+  }
+}
+
+/* Nav mobile: arc menu animations */
+@keyframes nav-backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes nav-arc-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Nav: desktop compact on tablet; mobile uses horizontal scroll */
+@media (min-width: 769px) and (max-width: 900px) {
+  .nav-bar {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+  .nav-bar .nav-inner {
+    gap: 1.25rem !important;
+  }
+  .nav-bar .nav-links {
+    gap: 1rem !important;
+  }
+  .nav-bar .nav-links a {
+    font-size: 0.65rem !important;
+    letter-spacing: 0.08em !important;
+  }
+}
+
+/* Footer: mobile */
+@media (max-width: 768px) {
+  .site-footer {
+    padding-top: 4rem !important;
+  }
+  .footer-cta {
+    margin-bottom: 2.5rem !important;
+    padding: 0 1rem;
+  }
+  .footer-cta-pill {
+    flex-direction: column;
+    border-radius: 16px !important;
+    max-width: 280px;
+  }
+  .footer-cta-pill a {
+    border-right: none !important;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+    width: 100%;
+    text-align: center;
+    padding: 14px 20px !important;
+  }
+  .footer-brand h2 {
+    font-size: clamp(3.5rem, 18vw, 8rem) !important;
+  }
+  .footer-bottom {
+    padding-top: 1.5rem !important;
+  }
+}
+
+/* Chat: full-width panel and safe-area FAB on mobile */
+@media (max-width: 480px) {
+  .chat-panel {
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 85vh !important;
+    max-height: 85vh !important;
+    border-radius: 20px 20px 0 0 !important;
+  }
+  .chat-fab {
+    bottom: max(1rem, env(safe-area-inset-bottom)) !important;
+    right: max(1rem, env(safe-area-inset-right)) !important;
+  }
+  .chat-tooltip-wrap {
+    left: max(1rem, env(safe-area-inset-left)) !important;
+    right: max(1rem, env(safe-area-inset-right)) !important;
+    bottom: 80px !important;
+    max-width: none !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .about-they-we .about-they-we-row {
+    grid-template-columns: 1fr;
   }
 }

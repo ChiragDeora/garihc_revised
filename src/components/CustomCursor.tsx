@@ -7,12 +7,18 @@ export default function CustomCursor() {
     const ringRef = useRef<HTMLDivElement>(null);
     const [hovering, setHovering] = useState(false);
     const [visible, setVisible] = useState(false);
+    const [showCursor, setShowCursor] = useState(false);
     const pos = useRef({ x: 0, y: 0 });
     const ringPos = useRef({ x: 0, y: 0 });
 
     useEffect(() => {
-        // Skip on touch devices
-        if (typeof window !== "undefined" && "ontouchstart" in window) return;
+        // Only show cursor on client and when not a touch device (avoids hydration mismatch)
+        if (typeof window === "undefined" || "ontouchstart" in window) return;
+        setShowCursor(true);
+    }, []);
+
+    useEffect(() => {
+        if (!showCursor) return;
 
         const onMouseMove = (e: MouseEvent) => {
             pos.current = { x: e.clientX, y: e.clientY };
@@ -65,10 +71,9 @@ export default function CustomCursor() {
             cancelAnimationFrame(frame);
             observer.disconnect();
         };
-    }, [visible]);
+    }, [showCursor]);
 
-    // Don't render on server or touch devices
-    if (typeof window !== "undefined" && "ontouchstart" in window) return null;
+    if (!showCursor) return null;
 
     return (
         <>

@@ -96,6 +96,7 @@ export default function ChatWidget() {
             {/* Tooltip */}
             {showTooltip && !isOpen && (
                 <div
+                    className="chat-tooltip-wrap"
                     style={{
                         position: "fixed",
                         bottom: 80,
@@ -146,6 +147,7 @@ export default function ChatWidget() {
             {/* Chat window */}
             {isOpen && (
                 <div
+                    className="chat-panel"
                     style={{
                         position: "fixed",
                         bottom: 80,
@@ -412,6 +414,7 @@ export default function ChatWidget() {
 
             {/* Toggle button */}
             <button
+                className="chat-fab"
                 onClick={() => {
                     setIsOpen(!isOpen);
                     setShowTooltip(false);
