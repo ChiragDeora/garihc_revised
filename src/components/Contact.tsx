@@ -137,18 +137,7 @@ export default function Contact() {
             color: "#F5F5F0",
           }}
         >
-          Let&rsquo;s build something
-          <br />
-          <span
-            style={{
-              background: "linear-gradient(135deg, #BFA67A, #D4C4A0)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-            }}
-          >
-            extraordinary.
-          </span>
+          <span style={{ whiteSpace: "nowrap" }}>Got a problem worth solving?</span>
         </motion.h2>
 
         {/* Email */}

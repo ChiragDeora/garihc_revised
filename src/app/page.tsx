@@ -1,7 +1,6 @@
 import Intro from "@/components/Intro";
 import Navigation from "@/components/Navigation";
 import Services from "@/components/Services";
-import AISpotlight from "@/components/AISpotlight";
 import SelectedWork from "@/components/SelectedWork";
 import GarihcMeaning from "@/components/GarihcMeaning";
 import About from "@/components/About";
@@ -29,9 +28,8 @@ export default function Home() {
       <main>
         <About />
         <Services />
-        <AISpotlight />
         <SelectedWork />
-        <GarihcMeaning />
+        {/* <GarihcMeaning /> */}
         <Contact />
       </main>
 
