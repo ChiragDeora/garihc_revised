@@ -2,82 +2,34 @@
 
 import { useRef, useState, useCallback, useEffect } from "react";
 import { useInView } from "framer-motion";
+import { usePathname, useRouter } from "next/navigation";
+import {
+  getProjectIndexFromPath,
+  projects,
+} from "@/lib/work/projects";
 
 const VIRTUAL_VIEWPORT_WIDTH = 1440;
 
-type Project = {
-  name: string;
-  tag: string;
-  description: string;
-  link: string | null;
-  url: string;
-  image: string | null;
-  favicon: string | null;
-  favColor: string;
-  favInitial: string;
-  nda?: boolean;
-};
-
-const projects: Project[] = [
-  {
-    name: "SPCO",
-    tag: "Web · Platform",
-    description: "Corporate website and product catalog for a B2B distributor of industrial bearings, lubricants, and hardware components.",
-    link: "https://www.spco.in/",
-    url: "https://www.spco.in",
-    image: "/project-one.png",
-    favicon: "https://www.google.com/s2/favicons?domain=spco.in&sz=32",
-    favColor: "#2F6BD8",
-    favInitial: "S",
-  },
-  {
-    name: "Foal & Pony",
-    tag: "Branding · D2C · Web",
-    description: "Premium kids eyewear. Brand identity, website, and D2C launch across India.",
-    link: "https://foalandpony.com/",
-    url: "https://foalandpony.com",
-    image: "/project-two.png",
-    favicon: "https://www.google.com/s2/favicons?domain=foalandpony.com&sz=32",
-    favColor: "#C98B5E",
-    favInitial: "F",
-  },
-  {
-    name: "SAAJ",
-    tag: "Design · Frontend",
-    description: "Cinematic brand website for a Mumbai-based Bollywood acoustic wedding duo, crafted to feel as intimate as their live pheras performances.",
-    link: "https://saaj-website.vercel.app/",
-    url: "https://saaj-website.vercel.app",
-    image: null,
-    favicon: null,
-    favColor: "#BFA67A",
-    favInitial: "S",
-  },
-  {
-    name: "ProdFlow",
-    tag: "AI · Full-Stack",
-    description: "Production management with workflow automation, real-time tracking, and advanced reporting.",
-    link: null,
-    url: "prodflow.garihc",
-    image: "/prodflow.png",
-    favicon: null,
-    favColor: "#6B7280",
-    favInitial: "P",
-    nda: true,
-  },
-];
+function getInitialProjectIndex(): number {
+  if (typeof window === "undefined") return 0;
+  return getProjectIndexFromPath(window.location.pathname) ?? 0;
+}
 
 export default function SelectedWork() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.08 });
+  const router = useRouter();
+  const pathname = usePathname();
+  const initialProjectIndex = getInitialProjectIndex();
 
   const [openTabs, setOpenTabs] = useState([0, 1, 2, 3]);
-  const [activeTab, setActiveTab] = useState(0);
-  const [history, setHistory] = useState([0]);
+  const [activeTab, setActiveTab] = useState(initialProjectIndex);
+  const [history, setHistory] = useState([initialProjectIndex]);
   const [histPos, setHistPos] = useState(0);
   const [reloadKey, setReloadKey] = useState(0);
   const [loading, setLoading] = useState(false);
   const [closedTabs, setClosedTabs] = useState<number[]>([]);
-  const [urlText, setUrlText] = useState(projects[0].url);
+  const [urlText, setUrlText] = useState(projects[initialProjectIndex].url);
 
   // Drag state for tab reordering
   const [dragIdx, setDragIdx] = useState<number | null>(null);
@@ -109,6 +61,22 @@ export default function SelectedWork() {
     loadTimerRef.current = setTimeout(() => setLoading(false), 880);
   }, []);
 
+  const syncUrlToProject = useCallback(
+    (pi: number) => {
+      router.replace(`/work/${projects[pi].slug}`, { scroll: false });
+    },
+    [router]
+  );
+
+  useEffect(() => {
+    const pi = getProjectIndexFromPath(pathname);
+    if (pi == null || pi === activeTab) return;
+    setActiveTab(pi);
+    setUrlText(projects[pi].url);
+    setLoading(true);
+    endLoad();
+  }, [pathname, activeTab, endLoad]);
+
   const navigate = useCallback(
     (pi: number) => {
       if (pi === activeTab) {
@@ -124,9 +92,10 @@ export default function SelectedWork() {
       setHistPos(newHist.length - 1);
       setUrlText(projects[pi].url);
       setLoading(true);
+      syncUrlToProject(pi);
       endLoad();
     },
-    [activeTab, history, histPos, endLoad]
+    [activeTab, history, histPos, endLoad, syncUrlToProject]
   );
 
   const goBack = useCallback(() => {
@@ -137,8 +106,9 @@ export default function SelectedWork() {
     setActiveTab(pi);
     setUrlText(projects[pi].url);
     setLoading(true);
+    syncUrlToProject(pi);
     endLoad();
-  }, [histPos, history, endLoad]);
+  }, [histPos, history, endLoad, syncUrlToProject]);
 
   const goForward = useCallback(() => {
     if (histPos >= history.length - 1) return;
@@ -148,8 +118,9 @@ export default function SelectedWork() {
     setActiveTab(pi);
     setUrlText(projects[pi].url);
     setLoading(true);
+    syncUrlToProject(pi);
     endLoad();
-  }, [histPos, history, endLoad]);
+  }, [histPos, history, endLoad, syncUrlToProject]);
 
   const closeTab = useCallback(
     (pi: number, e: React.MouseEvent) => {
@@ -164,9 +135,10 @@ export default function SelectedWork() {
       setActiveTab(next);
       setUrlText(projects[next].url);
       setLoading(true);
+      syncUrlToProject(next);
       endLoad();
     },
-    [openTabs, activeTab, endLoad]
+    [openTabs, activeTab, endLoad, syncUrlToProject]
   );
 
   const newTab = useCallback(() => {
@@ -187,8 +159,9 @@ export default function SelectedWork() {
     setHistPos(newHist.length - 1);
     setUrlText(projects[pi].url);
     setLoading(true);
+    syncUrlToProject(pi);
     endLoad();
-  }, [closedTabs, openTabs, history, histPos, endLoad]);
+  }, [closedTabs, openTabs, history, histPos, endLoad, syncUrlToProject]);
 
   const reload = useCallback(() => {
     setReloadKey((k) => k + 1);

@@ -43,7 +43,7 @@ export default function Hero() {
         {/* Button */}
         <div className="hero-animate hero-animate-delay-4" style={{ marginTop: "2.5rem" }}>
           <a
-            href="#contact"
+            href="/contact"
             style={{
               fontFamily: "var(--font-outfit), sans-serif",
               fontSize: "0.7rem",

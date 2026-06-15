@@ -1,15 +1,19 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { scrollToElement, scrollToTop } from "@/lib/scroll";
+import {
+  getPathForSection,
+  SECTION_IDS,
+  type SectionId,
+} from "@/lib/navigation/routes";
 
-const SECTION_IDS = ["work", "about", "services", "contact"] as const;
-
-const navLinks: { label: string; href: `#${string}`; id: string }[] = [
-  { label: "Work", href: "#work", id: "work" },
-  { label: "About", href: "#about", id: "about" },
-  { label: "Services", href: "#services", id: "services" },
-  { label: "Contact", href: "#contact", id: "contact" },
+const navLinks: { label: string; href: string; id: SectionId }[] = [
+  { label: "Work", href: "/work", id: "work" },
+  { label: "About", href: "/about", id: "about" },
+  { label: "Services", href: "/services", id: "services" },
+  { label: "Contact", href: "/contact", id: "contact" },
 ];
 
 const MOBILE_BREAKPOINT = 768;
@@ -97,6 +101,8 @@ function ThemeToggle({ size = 22 }: { size?: number }) {
 }
 
 export default function Navigation() {
+  const router = useRouter();
+  const pathname = usePathname();
   const [visible, setVisible] = useState(false);
   const [activeSection, setActiveSection] = useState("");
   const [isMobile, setIsMobile] = useState(false);
@@ -142,9 +148,17 @@ export default function Navigation() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const goTo = (href: string) => {
+  const goTo = (id: SectionId) => {
     setArcOpen(false);
-    scrollToElement(href);
+    const path = getPathForSection(id, pathname);
+    router.replace(path, { scroll: false });
+    scrollToElement(`#${id}`);
+  };
+
+  const goHome = () => {
+    setArcOpen(false);
+    router.replace("/", { scroll: false });
+    scrollToTop();
   };
 
   const linkEl = (link: (typeof navLinks)[0]) => {
@@ -155,7 +169,7 @@ export default function Navigation() {
         href={link.href}
         onClick={(e) => {
           e.preventDefault();
-          goTo(link.href);
+          goTo(link.id);
         }}
         style={{
           fontFamily: "var(--font-outfit), sans-serif",
@@ -230,12 +244,11 @@ export default function Navigation() {
             }}
           >
             <a
-              href="#"
+              href="/"
               className="nav-logo"
               onClick={(e) => {
                 e.preventDefault();
-                setArcOpen(false);
-                scrollToTop();
+                goHome();
               }}
               style={{
                 display: "flex",
@@ -306,7 +319,7 @@ export default function Navigation() {
                   href={link.href}
                   onClick={(e) => {
                     e.preventDefault();
-                    goTo(link.href);
+                    goTo(link.id);
                   }}
                   style={{
                     fontFamily: "var(--font-outfit), sans-serif",
@@ -362,11 +375,11 @@ export default function Navigation() {
         }}
       >
         <a
-          href="#"
+          href="/"
           className="nav-logo"
           onClick={(e) => {
             e.preventDefault();
-            scrollToTop();
+            goHome();
           }}
           style={{
             textDecoration: "none",

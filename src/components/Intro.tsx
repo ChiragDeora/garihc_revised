@@ -392,7 +392,7 @@ export default function Intro() {
                         }}
                     >
                         <a
-                            href="#contact"
+                            href="/contact"
                             className="btn-accent"
                             style={{
                                 fontSize: "0.65rem",

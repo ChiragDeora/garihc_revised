@@ -7,6 +7,7 @@ import About from "@/components/About";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import FuturisticCursor from "@/components/FuturisticCursor";
+import SectionRouting from "@/components/SectionRouting";
 import { SmoothScroll } from "@/lib/scroll";
 import ChatWidget from "@/components/ChatWidget";
 
@@ -14,6 +15,7 @@ export default function Home() {
   return (
     <>
       <SmoothScroll />
+      <SectionRouting />
       <FuturisticCursor />
 
       {/* Noise texture overlay */}

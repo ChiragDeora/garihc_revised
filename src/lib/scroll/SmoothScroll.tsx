@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Lenis from "lenis";
+import {
+  getPathForSection,
+  getSectionIdFromPath,
+  type SectionId,
+} from "@/lib/navigation/routes";
 
 declare global {
   interface Window {
@@ -9,7 +15,16 @@ declare global {
   }
 }
 
+const SECTION_HASHES: Record<string, SectionId> = {
+  "#work": "work",
+  "#about": "about",
+  "#services": "services",
+  "#contact": "contact",
+};
+
 export default function SmoothScroll() {
+  const router = useRouter();
+
   useEffect(() => {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reducedMotion) return;
@@ -33,17 +48,25 @@ export default function SmoothScroll() {
     const onAnchorClick = (e: MouseEvent) => {
       if (e.defaultPrevented) return;
 
-      const anchor = (e.target as Element).closest('a[href^="#"]');
+      const anchor = (e.target as Element).closest("a[href]") as HTMLAnchorElement | null;
       if (!anchor) return;
 
       const href = anchor.getAttribute("href");
-      if (!href || href === "#") return;
+      if (!href || href === "#" || href === "/") return;
 
-      const target = document.querySelector(href);
+      const sectionId =
+        SECTION_HASHES[href] ??
+        (anchor.pathname ? getSectionIdFromPath(anchor.pathname) : null);
+
+      if (!sectionId) return;
+
+      const target = document.getElementById(sectionId);
       if (!target) return;
 
       e.preventDefault();
-      lenis.scrollTo(target as HTMLElement, { offset: -8 });
+      const path = getPathForSection(sectionId, window.location.pathname);
+      router.replace(path, { scroll: false });
+      lenis.scrollTo(target, { offset: -8 });
     };
 
     document.addEventListener("click", onAnchorClick);
@@ -54,7 +77,7 @@ export default function SmoothScroll() {
       lenis.destroy();
       delete window.__lenis;
     };
-  }, []);
+  }, [router]);
 
   return null;
 }
