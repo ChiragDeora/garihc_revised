@@ -318,7 +318,7 @@ export default function Services() {
             We identify where intelligence creates compounding value. Quietly,
             reliably, at scale.
           </p>
-          <a
+          {/* <a
             href="/calculator"
             style={{
               fontFamily: "var(--font-outfit), sans-serif",
@@ -340,7 +340,7 @@ export default function Services() {
             }}
           >
             Calculate your AI savings →
-          </a>
+          </a> */}
           </div>
 
           {/* Three AI glass cards – stacked full width to fill space */}

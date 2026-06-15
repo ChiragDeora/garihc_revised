@@ -2,6 +2,12 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import dynamic from "next/dynamic";
+
+const Player = dynamic(
+    () => import("@lottiefiles/react-lottie-player").then((m) => m.Player),
+    { ssr: false }
+);
 
 const GARIHC = "GARIHC";
 const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&";
@@ -127,11 +133,11 @@ export default function Intro() {
                     const wave =
                         Math.sin(x * 0.01 + time) * Math.cos(y * 0.01 + time * 0.7);
                     const proximity = Math.max(0, 1 - dist / 300);
-                    const opacity = 0.06 + wave * 0.03 + proximity * 0.15;
+                    const opacity = 0.12 + wave * 0.06 + proximity * 0.25;
 
                     ctx.beginPath();
                     ctx.arc(x, y, 1, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(191, 166, 122, ${Math.max(0, Math.min(0.3, opacity))})`;
+                    ctx.fillStyle = `rgba(191, 166, 122, ${Math.max(0, Math.min(0.5, opacity))})`;
                     ctx.fill();
                 }
             }
@@ -189,14 +195,15 @@ export default function Intro() {
                     className="hero-title"
                     style={{
                         fontFamily: "var(--font-cormorant), serif",
-                        fontSize: "clamp(4.25rem, 15vw, 11rem)",
+                        fontSize: "clamp(3rem, 13vw, 11rem)",
                         fontWeight: 300,
-                        letterSpacing: "0.35em",
+                        letterSpacing: "clamp(0.15em, 3vw, 0.35em)",
                         margin: 0,
                         paddingLeft: "0.18em",
                         paddingRight: "0.18em",
                         color: "#F5F5F0",
                         display: "inline-block",
+                        whiteSpace: "nowrap",
                     }}
                 >
                     {display.map((char, i) => (
@@ -410,46 +417,24 @@ export default function Intro() {
                 )}
             </AnimatePresence>
 
-            {/* Scroll indicator */}
+            {/* Scroll arrow */}
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={mounted ? { opacity: phase === "reveal" ? 1 : 0 } : {}}
                 transition={{ duration: 1, delay: phase === "reveal" ? 1.8 : 0 }}
                 style={{
                     position: "absolute",
-                    bottom: "2.5rem",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
+                    bottom: "1.5rem",
                     zIndex: 1,
+                    cursor: "pointer",
                 }}
+                onClick={() => document.getElementById("work")?.scrollIntoView({ behavior: "smooth" })}
             >
-                <span
-                    style={{
-                        fontFamily: "var(--font-outfit), sans-serif",
-                        fontSize: "0.6rem",
-                        fontWeight: 400,
-                        letterSpacing: "0.2em",
-                        textTransform: "uppercase",
-                        color: "var(--text-muted)",
-                        marginBottom: "0.75rem",
-                    }}
-                >
-                    Scroll
-                </span>
-                <motion.div
-                    style={{
-                        width: 1,
-                        height: 40,
-                        background: "linear-gradient(180deg, #BFA67A, transparent)",
-                        transformOrigin: "top",
-                    }}
-                    animate={{ scaleY: [0, 1, 0] }}
-                    transition={{
-                        duration: 2.5,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                    }}
+                <Player
+                    autoplay
+                    loop
+                    src="/zigzag-arrow.json"
+                    style={{ width: 48, height: 80 }}
                 />
             </motion.div>
         </section>

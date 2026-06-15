@@ -2,6 +2,7 @@
 
 import { useRef, useEffect, useState } from "react";
 import { motion, useInView } from "framer-motion";
+import { CALENDLY_URL, gmailComposeUrl } from "@/lib/contact";
 
 export default function Contact() {
   const ref = useRef(null);
@@ -28,6 +29,7 @@ export default function Contact() {
     <section
       id="contact"
       ref={ref}
+      className="contact-section"
       style={{
         background: "#0A0A0A",
         minHeight: "100vh",
@@ -41,6 +43,7 @@ export default function Contact() {
     >
       {/* Animated border frame */}
       <div
+        className="contact-border-frame"
         style={{
           position: "absolute",
           inset: "2rem",
@@ -137,7 +140,7 @@ export default function Contact() {
             color: "#F5F5F0",
           }}
         >
-          <span style={{ whiteSpace: "nowrap" }}>Got a problem worth solving?</span>
+          <span className="contact-headline">Got a problem worth solving?</span>
         </motion.h2>
 
         {/* Email */}
@@ -147,7 +150,9 @@ export default function Contact() {
           transition={{ duration: 0.6, delay: 0.3 }}
         >
           <a
-            href="mailto:info@garihc.com"
+            href={gmailComposeUrl()}
+            target="_blank"
+            rel="noopener noreferrer"
             style={{
               fontFamily: "var(--font-outfit), sans-serif",
               fontSize: "clamp(1rem, 2vw, 1.4rem)",
@@ -208,35 +213,28 @@ export default function Contact() {
         </motion.div>
         */}
 
-        {/* CTA Button */}
+        {/* CTA — two ways to start */}
         <motion.div
+          className="contact-cta-actions"
           initial={{ opacity: 0, y: 15 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.7 }}
-          style={{ marginTop: "3rem" }}
         >
           <a
-            href="mailto:info@garihc.com"
-            className="btn-accent"
-            style={{
-              padding: "18px 50px",
-            }}
-            onMouseEnter={(e) => {
-              const t = e.currentTarget;
-              t.style.background = "transparent";
-              t.style.color = "var(--accent-warm)";
-              t.style.borderColor = "var(--accent-warm)";
-              t.style.boxShadow = "0 0 40px rgba(196,102,58,0.2)";
-            }}
-            onMouseLeave={(e) => {
-              const t = e.currentTarget;
-              t.style.background = "var(--accent-warm)";
-              t.style.color = "#FFFFFF";
-              t.style.borderColor = "var(--accent-warm)";
-              t.style.boxShadow = "none";
-            }}
+            href={CALENDLY_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-accent contact-cta-btn"
           >
-            Start a Project
+            Book a call
+          </a>
+          <a
+            href={gmailComposeUrl(undefined, "New project — GARIHC")}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-accent contact-cta-btn contact-cta-btn-secondary"
+          >
+            Email us
           </a>
         </motion.div>
       </div>

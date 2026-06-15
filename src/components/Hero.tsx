@@ -114,38 +114,18 @@ export default function Hero() {
         </p>
       </div>
 
-      {/* Scroll indicator */}
+      {/* Scroll hint */}
       <div
-        className="hero-animate hero-animate-delay-5 scroll-indicator hidden md:flex"
+        className="hero-animate hero-animate-delay-5 scroll-hint hidden md:flex"
         style={{
           position: "absolute",
           bottom: "2rem",
           left: "50%",
           transform: "translateX(-50%)",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: "0.5rem",
         }}
       >
-        <span
-          className="text-grey"
-          style={{
-            fontFamily: "var(--font-outfit), sans-serif",
-            fontSize: "0.65rem",
-            fontWeight: 400,
-            textTransform: "uppercase",
-            letterSpacing: "0.15em",
-          }}
-        >
-          Scroll
-        </span>
-        <div
-          style={{
-            width: 1,
-            height: 30,
-            background: "linear-gradient(180deg, #B8A88A, transparent)",
-          }}
-        />
+        <span className="scroll-hint__label">Explore</span>
+        <span className="scroll-hint__chevron" />
       </div>
     </section>
   );

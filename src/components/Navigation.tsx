@@ -1,33 +1,99 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { scrollToElement, scrollToTop } from "@/lib/scroll";
 
-// Section ids must match the id attribute on each <section> in the page (DOM order top to bottom)
-const SECTION_IDS = ["about", "services", "work", "contact"] as const;
+const SECTION_IDS = ["work", "about", "services", "contact"] as const;
 
-// Order matches DOM: About, Services, Work, Contact (see page.tsx <main>)
 const navLinks: { label: string; href: `#${string}`; id: string }[] = [
+  { label: "Work", href: "#work", id: "work" },
   { label: "About", href: "#about", id: "about" },
   { label: "Services", href: "#services", id: "services" },
-  { label: "Work", href: "#work", id: "work" },
   { label: "Contact", href: "#contact", id: "contact" },
 ];
 
 const MOBILE_BREAKPOINT = 768;
 const NAV_BAR_HEIGHT = 52;
-// Horizontal row centered below the nav bar
-function getArcLayout(w: number) {
-  const total = navLinks.length;
-  const topY = NAV_BAR_HEIGHT + 28;
-  const totalWidth = w - 48; // 24px padding each side
-  const step = totalWidth / (total - 1);
-  const startX = 24;
 
-  return navLinks.map((_, i) => ({
-    left: startX + i * step,
-    top: topY,
-    rotation: 0,
-  }));
+function ThemeToggle({ size = 22 }: { size?: number }) {
+  const [dark, setDark] = useState(true);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("theme");
+    if (stored === "light") {
+      setDark(false);
+      document.documentElement.setAttribute("data-theme", "light");
+    }
+  }, []);
+
+  const toggle = useCallback(() => {
+    const next = !dark;
+    setDark(next);
+    if (next) {
+      document.documentElement.removeAttribute("data-theme");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.setAttribute("data-theme", "light");
+      localStorage.setItem("theme", "light");
+    }
+  }, [dark]);
+
+  return (
+    <button
+      type="button"
+      aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+      onClick={toggle}
+      className="theme-toggle"
+      style={{
+        width: size * 2.1,
+        height: size + 4,
+        borderRadius: size,
+        border: "1px solid rgba(255,255,255,0.1)",
+        background: dark ? "rgba(255,255,255,0.06)" : "rgba(191,166,122,0.18)",
+        cursor: "pointer",
+        position: "relative",
+        flexShrink: 0,
+        transition: "background 0.4s ease, border-color 0.4s ease",
+        padding: 0,
+      }}
+    >
+      {/* Track knob */}
+      <span
+        style={{
+          position: "absolute",
+          top: 2,
+          left: dark ? 2 : `calc(100% - ${size - 2}px)`,
+          width: size - 4,
+          height: size - 4,
+          borderRadius: "50%",
+          background: dark ? "#1a1a1a" : "#F5F5F0",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          transition: "left 0.35s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s",
+          boxShadow: "0 1px 4px rgba(0,0,0,0.3)",
+        }}
+      >
+        {dark ? (
+          <svg width={size * 0.55} height={size * 0.55} viewBox="0 0 24 24" fill="none" stroke="#BFA67A" strokeWidth="2.2" strokeLinecap="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+          </svg>
+        ) : (
+          <svg width={size * 0.55} height={size * 0.55} viewBox="0 0 24 24" fill="none" stroke="#C4663A" strokeWidth="2.2" strokeLinecap="round">
+            <circle cx="12" cy="12" r="5" />
+            <line x1="12" y1="1" x2="12" y2="3" />
+            <line x1="12" y1="21" x2="12" y2="23" />
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+            <line x1="1" y1="12" x2="3" y2="12" />
+            <line x1="21" y1="12" x2="23" y2="12" />
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+          </svg>
+        )}
+      </span>
+    </button>
+  );
 }
 
 export default function Navigation() {
@@ -35,74 +101,53 @@ export default function Navigation() {
   const [activeSection, setActiveSection] = useState("");
   const [isMobile, setIsMobile] = useState(false);
   const [arcOpen, setArcOpen] = useState(false);
-  const [arcLayout, setArcLayout] = useState<{ left: number; top: number; rotation: number }[]>([]);
-  const [viewport, setViewport] = useState({ w: 0, h: 0 });
 
   useEffect(() => {
-    const check = () => {
-      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
-      setViewport({ w: window.innerWidth, h: window.innerHeight });
-    };
+    const check = () => setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
     check();
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  useEffect(() => {
-    if (!isMobile || viewport.w <= 0) return;
-    setArcLayout(getArcLayout(viewport.w));
-  }, [isMobile, viewport.w, viewport.h]);
-
-  // Recompute arc when menu opens; use visual viewport on mobile so we don't clip (browser chrome / URL bar)
-  useEffect(() => {
-    if (!arcOpen || !isMobile) return;
-    const measure = () => {
-      const vv = window.visualViewport;
-      const w = vv?.width ?? window.innerWidth;
-      const h = vv?.height ?? window.innerHeight;
-      setViewport({ w, h });
-    };
-    measure();
-    const t = setTimeout(measure, 150);
-    window.visualViewport?.addEventListener("resize", measure);
-    return () => {
-      clearTimeout(t);
-      window.visualViewport?.removeEventListener("resize", measure);
-    };
-  }, [arcOpen, isMobile]);
+  const lastScrollY = useRef(0);
 
   useEffect(() => {
+    const SCROLL_DELTA = 6;
+    const HIDE_OVER_HERO = () => window.innerHeight * 0.8;
+
     const handleScroll = () => {
-      setVisible(window.scrollY > window.innerHeight * 0.8);
+      const y = window.scrollY;
+      const prev = lastScrollY.current;
+      const diff = y - prev;
 
-      // Active section = section whose top has passed the activation line (iterate in DOM order)
+      if (y < HIDE_OVER_HERO()) {
+        setVisible(false);
+      } else if (Math.abs(diff) > SCROLL_DELTA) {
+        setVisible(diff < 0);
+      }
+      lastScrollY.current = y;
+
       const threshold = window.innerHeight * 0.4;
       let current = "";
-
       for (const id of SECTION_IDS) {
         const el = document.getElementById(id);
         if (!el) continue;
-        const top = el.getBoundingClientRect().top;
-        if (top <= threshold) current = id;
+        if (el.getBoundingClientRect().top <= threshold) current = id;
       }
-
       setActiveSection(current);
     };
-
+    lastScrollY.current = window.scrollY;
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Allow scroll when nav is open on mobile (no body overflow lock)
-
   const goTo = (href: string) => {
     setArcOpen(false);
-    const el = document.querySelector(href);
-    el?.scrollIntoView({ behavior: "smooth" });
+    scrollToElement(href);
   };
 
-  const linkEl = (link: (typeof navLinks)[0], mobile = false) => {
+  const linkEl = (link: (typeof navLinks)[0]) => {
     const isActive = activeSection === link.id;
     return (
       <a
@@ -114,7 +159,7 @@ export default function Navigation() {
         }}
         style={{
           fontFamily: "var(--font-outfit), sans-serif",
-          fontSize: mobile ? "0.75rem" : "0.75rem",
+          fontSize: "0.75rem",
           fontWeight: 400,
           textTransform: "uppercase",
           letterSpacing: "0.12em",
@@ -136,7 +181,7 @@ export default function Navigation() {
         }}
       >
         {link.label}
-        {isActive && !mobile && (
+        {isActive && (
           <span
             style={{
               position: "absolute",
@@ -190,19 +235,21 @@ export default function Navigation() {
               onClick={(e) => {
                 e.preventDefault();
                 setArcOpen(false);
-                window.scrollTo({ top: 0, behavior: "smooth" });
+                scrollToTop();
               }}
               style={{
-                fontFamily: "var(--font-cormorant), serif",
-                fontSize: "0.9rem",
-                letterSpacing: "0.22em",
-                fontWeight: 600,
-                color: "#F5F5F0",
+                display: "flex",
+                alignItems: "center",
+                gap: "0.4rem",
                 textDecoration: "none",
               }}
             >
-              GARIHC
+              <img src="/logo-light.png" alt="" className="nav-logo-img" style={{ height: 26, width: "auto" }} />
+              <span className="nav-logo-text" style={{ fontFamily: "var(--font-cormorant), serif", fontSize: "1rem", letterSpacing: "0.24em", fontWeight: 600, color: "#F5F5F0" }}>GARIHC</span>
             </a>
+            {/* <div style={{ position: "absolute", right: 48, display: "flex", alignItems: "center" }}>
+              <ThemeToggle size={20} />
+            </div> */}
             <button
               type="button"
               aria-label={arcOpen ? "Close navigation" : "Open navigation"}
@@ -225,44 +272,13 @@ export default function Navigation() {
                 transition: "background 0.25s",
               }}
             >
-              <span
-                className="nav-menu-bar"
-                style={{
-                  width: 18,
-                  height: 2,
-                  background: "#F5F5F0",
-                  borderRadius: 1,
-                  transition: "transform 0.3s ease, opacity 0.2s ease",
-                  transform: arcOpen ? "translateY(7px) rotate(45deg)" : "none",
-                }}
-              />
-              <span
-                className="nav-menu-bar"
-                style={{
-                  width: 18,
-                  height: 2,
-                  background: "#F5F5F0",
-                  borderRadius: 1,
-                  transition: "opacity 0.2s ease",
-                  opacity: arcOpen ? 0 : 1,
-                }}
-              />
-              <span
-                className="nav-menu-bar"
-                style={{
-                  width: 18,
-                  height: 2,
-                  background: "#F5F5F0",
-                  borderRadius: 1,
-                  transition: "transform 0.3s ease, opacity 0.2s ease",
-                  transform: arcOpen ? "translateY(-7px) rotate(-45deg)" : "none",
-                }}
-              />
+              <span style={{ width: 18, height: 2, background: "#F5F5F0", borderRadius: 1, transition: "transform 0.3s ease, opacity 0.2s ease", transform: arcOpen ? "translateY(7px) rotate(45deg)" : "none" }} />
+              <span style={{ width: 18, height: 2, background: "#F5F5F0", borderRadius: 1, transition: "opacity 0.2s ease", opacity: arcOpen ? 0 : 1 }} />
+              <span style={{ width: 18, height: 2, background: "#F5F5F0", borderRadius: 1, transition: "transform 0.3s ease, opacity 0.2s ease", transform: arcOpen ? "translateY(-7px) rotate(-45deg)" : "none" }} />
             </button>
           </div>
         </nav>
 
-        {/* Menu row */}
         {arcOpen && (
           <div
             style={{
@@ -311,7 +327,6 @@ export default function Navigation() {
             })}
           </div>
         )}
-
       </>
     );
   }
@@ -334,8 +349,7 @@ export default function Navigation() {
         borderRadius: 50,
         padding: "0 2rem",
         opacity: visible ? 1 : 0,
-        transition:
-          "transform 0.5s cubic-bezier(0.22,1,0.36,1), opacity 0.5s ease",
+        transition: "transform 0.5s cubic-bezier(0.22,1,0.36,1), opacity 0.5s ease",
       }}
     >
       <div
@@ -352,30 +366,25 @@ export default function Navigation() {
           className="nav-logo"
           onClick={(e) => {
             e.preventDefault();
-            window.scrollTo({ top: 0, behavior: "smooth" });
+            scrollToTop();
           }}
           style={{
-            fontFamily: "var(--font-cormorant), serif",
-            fontSize: "0.9rem",
-            letterSpacing: "0.3em",
-            fontWeight: 600,
-            color: "#F5F5F0",
             textDecoration: "none",
             flexShrink: 0,
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
           }}
         >
-          GARIHC
+          <img src="/logo-light.png" alt="" className="nav-logo-img" style={{ height: 32, width: "auto" }} />
+          <span className="nav-logo-text" style={{ fontFamily: "var(--font-cormorant), serif", fontSize: "1.1rem", letterSpacing: "0.3em", fontWeight: 600, color: "#F5F5F0" }}>GARIHC</span>
         </a>
-        <div
-          style={{
-            width: 1,
-            height: 20,
-            background: "rgba(255,255,255,0.1)",
-          }}
-        />
+        <div style={{ width: 1, height: 20, background: "rgba(255,255,255,0.1)" }} />
         <div className="nav-links" style={{ display: "flex", alignItems: "center", gap: "2rem" }}>
-          {navLinks.map((l) => linkEl(l, false))}
+          {navLinks.map((l) => linkEl(l))}
         </div>
+        {/* <div style={{ width: 1, height: 20, background: "rgba(255,255,255,0.1)" }} />
+        <ThemeToggle size={22} /> */}
       </div>
     </nav>
   );

@@ -6,14 +6,15 @@ import GarihcMeaning from "@/components/GarihcMeaning";
 import About from "@/components/About";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
-import CustomCursor from "@/components/CustomCursor";
+import FuturisticCursor from "@/components/FuturisticCursor";
+import { SmoothScroll } from "@/lib/scroll";
 import ChatWidget from "@/components/ChatWidget";
 
 export default function Home() {
   return (
     <>
-      {/* Custom cursor */}
-      <CustomCursor />
+      <SmoothScroll />
+      <FuturisticCursor />
 
       {/* Noise texture overlay */}
       <div className="noise-overlay" />
@@ -26,9 +27,9 @@ export default function Home() {
 
       {/* Content sections */}
       <main>
+        <SelectedWork />
         <About />
         <Services />
-        <SelectedWork />
         {/* <GarihcMeaning /> */}
         <Contact />
       </main>

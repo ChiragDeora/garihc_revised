@@ -1,7 +1,10 @@
 "use client";
 
+import { CALENDLY_URL, gmailComposeUrl } from "@/lib/contact";
+
 export default function Footer() {
   const currentMonth = new Date().toLocaleString("default", { month: "long" });
+  const currentMonthShort = new Date().toLocaleString("default", { month: "short" });
 
   return (
     <footer
@@ -36,51 +39,23 @@ export default function Footer() {
           }}
         >
           <a
-            href="mailto:info@garihc.com"
-            style={{
-              fontFamily: "var(--font-outfit), sans-serif",
-              fontSize: "0.8rem",
-              fontWeight: 400,
-              color: "#F5F5F0",
-              textDecoration: "none",
-              padding: "14px 28px",
-              borderRight: "1px solid rgba(255,255,255,0.12)",
-              transition: "background 0.3s",
-              background: "transparent",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "rgba(255,255,255,0.05)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "transparent";
-            }}
+            href={gmailComposeUrl(undefined, "Work inquiry — GARIHC")}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="footer-cta-link footer-cta-link-email"
           >
             Email for work.
           </a>
-          <div
-            style={{
-              fontFamily: "var(--font-outfit), sans-serif",
-              fontSize: "0.8rem",
-              fontWeight: 400,
-              color: "#F5F5F0",
-              padding: "14px 28px",
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-            }}
+          <a
+            href={CALENDLY_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="footer-cta-link footer-cta-link-availability"
           >
-            <span
-              style={{
-                width: 8,
-                height: 8,
-                borderRadius: "50%",
-                background: "#4ADE80",
-                display: "inline-block",
-                boxShadow: "0 0 8px rgba(74,222,128,0.4)",
-              }}
-            />
-            Available for {currentMonth}
-          </div>
+            <span className="footer-cta-dot" />
+            <span className="footer-month-full">Available for {currentMonth}</span>
+            <span className="footer-month-short">Avail. {currentMonthShort}</span>
+          </a>
         </div>
       </div>
 

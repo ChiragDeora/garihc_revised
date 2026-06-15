@@ -19,9 +19,10 @@ const outfit = Outfit({
 
 export const metadata: Metadata = {
   title: "GARIHC - Strategy. Technology. Taste.",
-  description: "AI-powered consulting for brands with ambition. Strategy, technology, and taste.",
+  description: "GARIHC builds AI-driven brand systems, digital products, and strategy-led experiences for ambitious businesses.",
   icons: {
-    icon: "/favicon.svg",
+    icon: "/icon.png",
+    apple: "/apple-icon.png",
   },
 };
 
@@ -38,7 +39,7 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${cormorant.variable} ${outfit.variable} antialiased`}
-        style={{ background: "#0A0A0A", color: "#F5F5F0", overflowX: "hidden" }}
+        style={{ background: "var(--bg-primary)", color: "var(--text-primary)", overflowX: "hidden" }}
       >
         {children}
       </body>

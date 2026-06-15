@@ -1,423 +1,405 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import { useInView } from "framer-motion";
 
-const projects = [
+const VIRTUAL_VIEWPORT_WIDTH = 1440;
+
+type Project = {
+  name: string;
+  tag: string;
+  description: string;
+  link: string | null;
+  url: string;
+  image: string | null;
+  favicon: string | null;
+  favColor: string;
+  favInitial: string;
+  nda?: boolean;
+};
+
+const projects: Project[] = [
   {
     name: "SPCO",
-    tag: "WEB · PLATFORM",
-    description:
-      "End-to-end web development for an industrial parts marketplace.",
+    tag: "Web · Platform",
+    description: "Corporate website and product catalog for a B2B distributor of industrial bearings, lubricants, and hardware components.",
     link: "https://www.spco.in/",
-    hasEmbed: true,
+    url: "https://www.spco.in",
+    image: "/project-one.png",
+    favicon: "https://www.google.com/s2/favicons?domain=spco.in&sz=32",
+    favColor: "#2F6BD8",
+    favInitial: "S",
   },
   {
     name: "Foal & Pony",
-    tag: "BRANDING · D2C · WEB",
-    description:
-      "Premium kids eyewear. Brand identity, website, and D2C launch across India.",
+    tag: "Branding · D2C · Web",
+    description: "Premium kids eyewear. Brand identity, website, and D2C launch across India.",
     link: "https://foalandpony.com/",
-    hasEmbed: true,
+    url: "https://foalandpony.com",
+    image: "/project-two.png",
+    favicon: "https://www.google.com/s2/favicons?domain=foalandpony.com&sz=32",
+    favColor: "#C98B5E",
+    favInitial: "F",
   },
   {
-    name: "Production Management System",
-    tag: "AI · FULL-STACK",
-    description:
-      "Built an entire production management system. Workflow automation, real-time tracking, and reporting.",
-    link: null,
-    image: "/project-three.png",
-    nda: true,
-  },
-  {
-    name: "Freelance Consulting",
-    tag: "STRATEGY",
-    description:
-      "Ongoing strategic and technical consulting for select clients across industries.",
-    link: null,
+    name: "SAAJ",
+    tag: "Design · Frontend",
+    description: "Cinematic brand website for a Mumbai-based Bollywood acoustic wedding duo, crafted to feel as intimate as their live pheras performances.",
+    link: "https://saaj-website.vercel.app/",
+    url: "https://saaj-website.vercel.app",
     image: null,
+    favicon: null,
+    favColor: "#BFA67A",
+    favInitial: "S",
+  },
+  {
+    name: "ProdFlow",
+    tag: "AI · Full-Stack",
+    description: "Production management with workflow automation, real-time tracking, and advanced reporting.",
+    link: null,
+    url: "prodflow.garihc",
+    image: "/prodflow.png",
+    favicon: null,
+    favColor: "#6B7280",
+    favInitial: "P",
     nda: true,
   },
 ];
 
-function LiveSiteEmbed({ url, name }: { url: string; name: string }) {
-  const [loaded, setLoaded] = useState(false);
-  const [error, setError] = useState(false);
-
-  return (
-    <div
-      style={{
-        borderRadius: 16,
-        overflow: "hidden",
-        border: "1px solid rgba(255,255,255,0.08)",
-        boxShadow: "0 4px 60px rgba(0,0,0,0.4)",
-        position: "relative",
-        background: "#111111",
-      }}
-    >
-      {/* Dark browser chrome */}
-      <div
-        style={{
-          background: "#1A1A1A",
-          padding: "10px 16px",
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          borderBottom: "1px solid rgba(255,255,255,0.06)",
-        }}
-      >
-        <div style={{ display: "flex", gap: 5 }}>
-          <div
-            style={{
-              width: 10,
-              height: 10,
-              borderRadius: "50%",
-              background: "#FF5F57",
-            }}
-          />
-          <div
-            style={{
-              width: 10,
-              height: 10,
-              borderRadius: "50%",
-              background: "#FEBC2E",
-            }}
-          />
-          <div
-            style={{
-              width: 10,
-              height: 10,
-              borderRadius: "50%",
-              background: "#28C840",
-            }}
-          />
-        </div>
-        <div
-          style={{
-            flex: 1,
-            background: "rgba(255,255,255,0.05)",
-            borderRadius: 6,
-            padding: "5px 12px",
-            fontSize: "0.7rem",
-            fontFamily: "var(--font-outfit), sans-serif",
-            color: "var(--text-muted)",
-            border: "1px solid rgba(255,255,255,0.06)",
-          }}
-        >
-          {url}
-        </div>
-      </div>
-
-      {!loaded && !error && (
-        <div
-          style={{
-            height: 580,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            background: "#111111",
-          }}
-        >
-          <span
-            style={{
-              fontFamily: "var(--font-outfit), sans-serif",
-              fontSize: "0.8rem",
-              color: "var(--text-muted)",
-            }}
-          >
-            Loading {name}...
-          </span>
-        </div>
-      )}
-
-      {!error && (
-        <iframe
-          src={url}
-          title={name}
-          onLoad={() => setLoaded(true)}
-          onError={() => setError(true)}
-          sandbox="allow-scripts allow-same-origin"
-          style={{
-            width: "100%",
-            height: loaded ? 580 : 0,
-            border: "none",
-            display: loaded ? "block" : "none",
-            background: "#FFFFFF",
-          }}
-        />
-      )}
-
-      {error && (
-        <a
-          href={url}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            height: 300,
-            background: "#111111",
-            textDecoration: "none",
-          }}
-        >
-          <span
-            style={{
-              fontFamily: "var(--font-outfit), sans-serif",
-              fontSize: "0.85rem",
-              color: "#BFA67A",
-            }}
-          >
-            Visit {name} →
-          </span>
-        </a>
-      )}
-
-      {loaded && (
-        <a
-          href={url}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: 60,
-            background: "linear-gradient(transparent, rgba(17,17,17,0.95))",
-            display: "flex",
-            alignItems: "flex-end",
-            justifyContent: "center",
-            paddingBottom: "12px",
-            textDecoration: "none",
-          }}
-        >
-          <span
-            style={{
-              fontFamily: "var(--font-outfit), sans-serif",
-              fontSize: "0.65rem",
-              fontWeight: 400,
-              textTransform: "uppercase",
-              letterSpacing: "0.2em",
-              color: "#BFA67A",
-              background: "rgba(191,166,122,0.08)",
-              padding: "6px 18px",
-              borderRadius: 20,
-              border: "1px solid rgba(191,166,122,0.2)",
-            }}
-          >
-            Visit Live Site →
-          </span>
-        </a>
-      )}
-    </div>
-  );
-}
-
 export default function SelectedWork() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, amount: 0.02 });
+  const isInView = useInView(ref, { once: true, amount: 0.08 });
+
+  const [openTabs, setOpenTabs] = useState([0, 1, 2, 3]);
+  const [activeTab, setActiveTab] = useState(0);
+  const [history, setHistory] = useState([0]);
+  const [histPos, setHistPos] = useState(0);
+  const [reloadKey, setReloadKey] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [closedTabs, setClosedTabs] = useState<number[]>([]);
+  const [urlText, setUrlText] = useState(projects[0].url);
+
+  // Drag state for tab reordering
+  const [dragIdx, setDragIdx] = useState<number | null>(null);
+  const [dragOverIdx, setDragOverIdx] = useState<number | null>(null);
+
+  const loadTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  // Render the iframe at desktop viewport width and scale down to fit the container,
+  // so embedded responsive sites always show their desktop layout.
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [contentSize, setContentSize] = useState({ width: 0, height: 0 });
+
+  useEffect(() => {
+    const el = contentRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect;
+      setContentSize({ width, height });
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const scale = contentSize.width > 0 ? contentSize.width / VIRTUAL_VIEWPORT_WIDTH : 1;
+  const iframeHeight = scale > 0 ? contentSize.height / scale : 0;
+
+  const endLoad = useCallback(() => {
+    clearTimeout(loadTimerRef.current);
+    loadTimerRef.current = setTimeout(() => setLoading(false), 880);
+  }, []);
+
+  const navigate = useCallback(
+    (pi: number) => {
+      if (pi === activeTab) {
+        setReloadKey((k) => k + 1);
+        setLoading(true);
+        endLoad();
+        return;
+      }
+      const newHist = history.slice(0, histPos + 1);
+      newHist.push(pi);
+      setActiveTab(pi);
+      setHistory(newHist);
+      setHistPos(newHist.length - 1);
+      setUrlText(projects[pi].url);
+      setLoading(true);
+      endLoad();
+    },
+    [activeTab, history, histPos, endLoad]
+  );
+
+  const goBack = useCallback(() => {
+    if (histPos <= 0) return;
+    const newPos = histPos - 1;
+    const pi = history[newPos];
+    setHistPos(newPos);
+    setActiveTab(pi);
+    setUrlText(projects[pi].url);
+    setLoading(true);
+    endLoad();
+  }, [histPos, history, endLoad]);
+
+  const goForward = useCallback(() => {
+    if (histPos >= history.length - 1) return;
+    const newPos = histPos + 1;
+    const pi = history[newPos];
+    setHistPos(newPos);
+    setActiveTab(pi);
+    setUrlText(projects[pi].url);
+    setLoading(true);
+    endLoad();
+  }, [histPos, history, endLoad]);
+
+  const closeTab = useCallback(
+    (pi: number, e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (openTabs.length <= 1) return;
+      const idx = openTabs.indexOf(pi);
+      const nextOpen = openTabs.filter((x) => x !== pi);
+      let next = activeTab;
+      if (next === pi) next = nextOpen[Math.min(idx, nextOpen.length - 1)];
+      setOpenTabs(nextOpen);
+      setClosedTabs((prev) => [...prev, pi]);
+      setActiveTab(next);
+      setUrlText(projects[next].url);
+      setLoading(true);
+      endLoad();
+    },
+    [openTabs, activeTab, endLoad]
+  );
+
+  const newTab = useCallback(() => {
+    let pi: number | undefined;
+    if (closedTabs.length > 0) {
+      const closed = [...closedTabs];
+      pi = closed.pop()!;
+      setClosedTabs(closed);
+    } else {
+      pi = [0, 1, 2, 3].find((x) => !openTabs.includes(x));
+    }
+    if (pi == null) return;
+    const newHist = history.slice(0, histPos + 1);
+    newHist.push(pi);
+    setOpenTabs((prev) => [...prev, pi!]);
+    setActiveTab(pi);
+    setHistory(newHist);
+    setHistPos(newHist.length - 1);
+    setUrlText(projects[pi].url);
+    setLoading(true);
+    endLoad();
+  }, [closedTabs, openTabs, history, histPos, endLoad]);
+
+  const reload = useCallback(() => {
+    setReloadKey((k) => k + 1);
+    setLoading(true);
+    endLoad();
+  }, [endLoad]);
+
+  const handleUrlKey = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") {
+        (e.target as HTMLInputElement).blur();
+        reload();
+      }
+    },
+    [reload]
+  );
+
+  // Tab drag reorder handlers
+  const onDragStart = useCallback((arrIdx: number) => {
+    setDragIdx(arrIdx);
+  }, []);
+
+  const onDragOver = useCallback((e: React.DragEvent, arrIdx: number) => {
+    e.preventDefault();
+    setDragOverIdx(arrIdx);
+  }, []);
+
+  const onDrop = useCallback(
+    (arrIdx: number) => {
+      if (dragIdx == null || dragIdx === arrIdx) {
+        setDragIdx(null);
+        setDragOverIdx(null);
+        return;
+      }
+      const reordered = [...openTabs];
+      const [moved] = reordered.splice(dragIdx, 1);
+      reordered.splice(arrIdx, 0, moved);
+      setOpenTabs(reordered);
+      setDragIdx(null);
+      setDragOverIdx(null);
+    },
+    [dragIdx, openTabs]
+  );
+
+  const onDragEnd = useCallback(() => {
+    setDragIdx(null);
+    setDragOverIdx(null);
+  }, []);
+
+  const canBack = histPos > 0;
+  const canForward = histPos < history.length - 1;
+  const ap = projects[activeTab];
+  const hasClosedTabs = closedTabs.length > 0 || [0, 1, 2, 3].some((x) => !openTabs.includes(x));
 
   return (
-    <section
-      id="work"
-      ref={ref}
-      style={{ background: "#0A0A0A", padding: "160px 1.5rem" }}
-    >
-      <div style={{ maxWidth: 1280, margin: "0 auto", width: "100%" }}>
-        {/* Header */}
+    <section id="work" ref={ref} className="selected-work-section">
+      <div className="selected-work-inner">
         <div
+          className="selected-work-header"
           style={{
-            textAlign: "center",
-            marginBottom: "5rem",
             opacity: isInView ? 1 : 0.3,
-            transition: "opacity 0.6s ease",
+            transform: isInView ? "translateY(0)" : "translateY(20px)",
           }}
         >
-          <p
-            style={{
-              fontFamily: "var(--font-outfit), sans-serif",
-              textTransform: "uppercase",
-              letterSpacing: "0.3em",
-              fontSize: "0.65rem",
-              color: "#BFA67A",
-              fontWeight: 400,
-              marginBottom: "1rem",
-            }}
-          >
-            PORTFOLIO
-          </p>
-          <h2
-            style={{
-              fontFamily: "var(--font-cormorant), serif",
-              fontSize: "clamp(1.8rem, 3.5vw, 2.5rem)",
-              fontWeight: 400,
-              color: "#F5F5F0",
-              margin: 0,
-            }}
-          >
-            Selected Work
-          </h2>
+          <div>
+            <p>Portfolio</p>
+            <h2>Selected Work</h2>
+          </div>
+          <span className="sw-browse-label">Browse the work.</span>
         </div>
 
-        {/* Project list */}
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "4rem",
-          }}
-        >
-          {projects.map((project, i) => (
-            <div
-              key={project.name}
-              style={{
-                opacity: isInView ? 1 : 0.1,
-                transform: isInView ? "translateY(0)" : "translateY(30px)",
-                transition: `opacity 0.6s ease ${i * 100}ms, transform 0.6s ease ${i * 100}ms`,
-              }}
-            >
-              {project.hasEmbed && project.link ? (
-                <LiveSiteEmbed url={project.link} name={project.name} />
-              ) : project.image ? (
+        <div className="sw-browser" style={{ opacity: isInView ? 1 : 0, transform: isInView ? "translateY(0)" : "translateY(30px)" }}>
+          {/* Tab strip */}
+          <div className="sw-tab-strip">
+            {openTabs.map((pi, arrIdx) => {
+              const p = projects[pi];
+              const on = pi === activeTab;
+              const isDragging = dragIdx === arrIdx;
+              const isDragOver = dragOverIdx === arrIdx && dragIdx !== arrIdx;
+              return (
                 <div
-                  style={{
-                    overflow: "hidden",
-                    borderRadius: 16,
-                    lineHeight: 0,
-                    border: "1px solid rgba(255,255,255,0.08)",
-                  }}
+                  key={pi}
+                  className={`sw-tab ${on ? "active" : ""} ${isDragOver ? "drag-over" : ""}`}
+                  style={{ opacity: isDragging ? 0.4 : 1 }}
+                  draggable
+                  onDragStart={() => onDragStart(arrIdx)}
+                  onDragOver={(e) => onDragOver(e, arrIdx)}
+                  onDrop={() => onDrop(arrIdx)}
+                  onDragEnd={onDragEnd}
+                  onClick={() => navigate(pi)}
                 >
-                  <img
-                    src={project.image}
-                    alt={project.name}
-                    style={{
-                      width: "100%",
-                      height: "auto",
-                      maxHeight: 450,
-                      objectFit: "cover",
-                      display: "block",
-                    }}
-                  />
-                </div>
-              ) : (
-                <div
-                  style={{
-                    background: "#111111",
-                    border: "1px solid rgba(255,255,255,0.06)",
-                    borderRadius: 16,
-                    height: 220,
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <span
-                    style={{
-                      fontFamily: "var(--font-outfit), sans-serif",
-                      fontSize: "0.6rem",
-                      fontWeight: 400,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.3em",
-                      color: "var(--text-muted)",
-                      marginBottom: "0.75rem",
-                    }}
-                  >
-                    Under NDA
-                  </span>
-                  <h3
-                    style={{
-                      fontFamily: "var(--font-cormorant), serif",
-                      fontSize: "1.4rem",
-                      fontWeight: 400,
-                      margin: 0,
-                      color: "#F5F5F0",
-                    }}
-                  >
-                    {project.name}
-                  </h3>
-                </div>
-              )}
-
-              {/* Project info */}
-              <div
-                style={{
-                  marginTop: "1.25rem",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "flex-start",
-                  flexWrap: "wrap",
-                  gap: "0.5rem",
-                }}
-              >
-                <div>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.75rem",
-                    }}
-                  >
-                    <h3
-                      style={{
-                        fontFamily: "var(--font-cormorant), serif",
-                        fontSize: "1.5rem",
-                        fontWeight: 400,
-                        margin: 0,
-                        color: "#F5F5F0",
+                  {p.favicon ? (
+                    <img
+                      src={p.favicon}
+                      alt=""
+                      className="sw-tab-favicon"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = "none";
+                        const fallback = (e.target as HTMLElement).nextElementSibling as HTMLElement;
+                        if (fallback) fallback.style.display = "flex";
                       }}
-                    >
-                      {project.name}
-                    </h3>
-                    {project.nda && (
-                      <span
-                        style={{
-                          fontFamily: "var(--font-outfit), sans-serif",
-                          fontSize: "0.55rem",
-                          fontWeight: 400,
-                          textTransform: "uppercase",
-                          letterSpacing: "0.1em",
-                          color: "#BFA67A",
-                          border: "1px solid rgba(191,166,122,0.3)",
-                          borderRadius: 4,
-                          padding: "3px 8px",
-                        }}
-                      >
-                        NDA
-                      </span>
-                    )}
-                  </div>
-                  <p
+                    />
+                  ) : null}
+                  <span
+                    className="sw-tab-fav"
                     style={{
-                      fontFamily: "var(--font-outfit), sans-serif",
-                      fontSize: "0.85rem",
-                      fontWeight: 300,
-                      lineHeight: 1.6,
-                      marginTop: "0.35rem",
-                      color: "var(--text-secondary)",
-                      maxWidth: 600,
+                      background: p.favColor,
+                      display: p.favicon ? "none" : "flex",
                     }}
                   >
-                    {project.description}
-                  </p>
+                    {p.favInitial}
+                  </span>
+                  <span className="sw-tab-name">{p.name}</span>
+                  <button
+                    type="button"
+                    className="sw-tab-close"
+                    onClick={(e) => closeTab(pi, e)}
+                  >
+                    ✕
+                  </button>
                 </div>
-                <span
-                  style={{
-                    fontFamily: "var(--font-outfit), sans-serif",
-                    fontSize: "0.7rem",
-                    fontWeight: 400,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.1em",
-                    color: "var(--text-muted)",
-                    flexShrink: 0,
-                  }}
-                >
-                  {project.tag}
-                </span>
-              </div>
+              );
+            })}
+            {hasClosedTabs && (
+              <button type="button" className="sw-tab-add" onClick={newTab}>
+                +
+              </button>
+            )}
+          </div>
+
+          {/* Toolbar */}
+          <div className="sw-toolbar">
+            <button
+              type="button"
+              className={`sw-nav-btn ${canBack ? "" : "disabled"}`}
+              onClick={goBack}
+            >
+              ‹
+            </button>
+            <button
+              type="button"
+              className={`sw-nav-btn ${canForward ? "" : "disabled"}`}
+              onClick={goForward}
+            >
+              ›
+            </button>
+            <button type="button" className="sw-nav-btn" onClick={reload}>
+              ⟳
+            </button>
+            <div className="sw-url-bar">
+              <span className="sw-lock">&#128274;</span>
+              <input
+                value={urlText}
+                onChange={(e) => setUrlText(e.target.value)}
+                onKeyDown={handleUrlKey}
+                className="sw-url-input"
+              />
+              <span className="sw-live-dot" />
             </div>
-          ))}
+            <button type="button" className="sw-nav-btn">⋯</button>
+          </div>
+
+          {/* Loading bar */}
+          <div className="sw-loadbar">
+            {loading && <span className="sw-loadbar-fill" />}
+          </div>
+
+          {/* Content */}
+          <div className="sw-content" ref={contentRef}>
+            {ap.image && (
+              <img
+                key={`img-${activeTab}-${reloadKey}`}
+                src={ap.image}
+                alt={ap.name}
+                className="sw-poster"
+              />
+            )}
+            {ap.link && (
+              <iframe
+                key={`if-${activeTab}-${reloadKey}`}
+                src={ap.link}
+                title={ap.name}
+                sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+                className="sw-iframe"
+                style={{
+                  width: contentSize.width > 0 ? VIRTUAL_VIEWPORT_WIDTH : "100%",
+                  height: contentSize.width > 0 ? iframeHeight : "100%",
+                  transform: contentSize.width > 0 ? `scale(${scale})` : "none",
+                  transformOrigin: "top left",
+                }}
+              />
+            )}
+          </div>
+        </div>
+
+        {/* Project info below browser */}
+        <div className="sw-project-info" style={{ opacity: isInView ? 1 : 0, transform: isInView ? "translateY(0)" : "translateY(20px)" }}>
+          <div className="sw-project-meta">
+            <span className="sw-project-tag">{ap.tag}</span>
+            <h3 className="sw-project-name">{ap.name}</h3>
+            <p className="sw-project-desc">{ap.description}</p>
+          </div>
+          <div className="sw-project-actions">
+            {ap.link ? (
+              <a href={ap.link} target="_blank" rel="noopener noreferrer" className="sw-visit-btn">
+                Visit Site <span>&rarr;</span>
+              </a>
+            ) : (
+              <span className="sw-nda-badge">Under NDA</span>
+            )}
+          </div>
         </div>
       </div>
     </section>
