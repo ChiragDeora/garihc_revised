@@ -1,8 +1,13 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import ExpandableLattice from "./ExpandableLattice";
+import dynamic from "next/dynamic";
+
+const Player = dynamic(
+    () => import("@lottiefiles/react-lottie-player").then((m) => m.Player),
+    { ssr: false }
+);
 
 const GARIHC = "GARIHC";
 const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&";
@@ -47,8 +52,10 @@ function useTextScramble(text: string, delay: number = 0) {
 }
 
 export default function Intro() {
+    const canvasRef = useRef<HTMLCanvasElement>(null);
     const [mounted, setMounted] = useState(false);
     const { display, start } = useTextScramble(GARIHC, 300);
+    const mousePos = useRef({ x: 0.5, y: 0.5 });
     const [cycleIndex, setCycleIndex] = useState(0);
     const [phase, setPhase] = useState<"scramble" | "cycling" | "reveal">("scramble");
 
@@ -82,6 +89,69 @@ export default function Intro() {
         return () => clearInterval(timer);
     }, [phase]);
 
+    // Animated grid
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+        let animFrame: number;
+        let time = 0;
+
+        const resize = () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        };
+        resize();
+        window.addEventListener("resize", resize);
+
+        const onMouse = (e: MouseEvent) => {
+            mousePos.current = {
+                x: e.clientX / window.innerWidth,
+                y: e.clientY / window.innerHeight,
+            };
+        };
+        window.addEventListener("mousemove", onMouse);
+
+        const draw = () => {
+            time += 0.003;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const spacing = 50;
+            const cols = Math.ceil(canvas.width / spacing) + 1;
+            const rows = Math.ceil(canvas.height / spacing) + 1;
+            const mx = mousePos.current.x * canvas.width;
+            const my = mousePos.current.y * canvas.height;
+
+            for (let i = 0; i < cols; i++) {
+                for (let j = 0; j < rows; j++) {
+                    const x = i * spacing;
+                    const y = j * spacing;
+                    const dx = x - mx;
+                    const dy = y - my;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    const wave =
+                        Math.sin(x * 0.01 + time) * Math.cos(y * 0.01 + time * 0.7);
+                    const proximity = Math.max(0, 1 - dist / 300);
+                    const opacity = 0.12 + wave * 0.06 + proximity * 0.25;
+
+                    ctx.beginPath();
+                    ctx.arc(x, y, 1, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(191, 166, 122, ${Math.max(0, Math.min(0.5, opacity))})`;
+                    ctx.fill();
+                }
+            }
+            animFrame = requestAnimationFrame(draw);
+        };
+        draw();
+
+        return () => {
+            cancelAnimationFrame(animFrame);
+            window.removeEventListener("resize", resize);
+            window.removeEventListener("mousemove", onMouse);
+        };
+    }, []);
+
     return (
         <section
             className="intro-hero"
@@ -99,7 +169,10 @@ export default function Intro() {
                 boxSizing: "border-box",
             }}
         >
-            <ExpandableLattice />
+            <canvas
+                ref={canvasRef}
+                style={{ position: "absolute", inset: 0, pointerEvents: "none" }}
+            />
 
             {/* Central glow */}
             <motion.div
@@ -344,7 +417,26 @@ export default function Intro() {
                 )}
             </AnimatePresence>
 
-            {/* Lattice morphs into arrow on scroll — replaces old Lottie arrow */}
+            {/* Scroll arrow */}
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={mounted ? { opacity: phase === "reveal" ? 1 : 0 } : {}}
+                transition={{ duration: 1, delay: phase === "reveal" ? 1.8 : 0 }}
+                style={{
+                    position: "absolute",
+                    bottom: "1.5rem",
+                    zIndex: 1,
+                    cursor: "pointer",
+                }}
+                onClick={() => document.getElementById("work")?.scrollIntoView({ behavior: "smooth" })}
+            >
+                <Player
+                    autoplay
+                    loop
+                    src="/zigzag-arrow.json"
+                    style={{ width: 48, height: 80 }}
+                />
+            </motion.div>
         </section>
     );
 }
