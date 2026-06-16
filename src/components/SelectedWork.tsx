@@ -3,6 +3,7 @@
 import { useRef, useState, useCallback, useEffect } from "react";
 import { useInView } from "framer-motion";
 import { usePathname, useRouter } from "next/navigation";
+import Image from "next/image";
 import {
   getProjectIndexFromPath,
   projects,
@@ -332,11 +333,14 @@ export default function SelectedWork() {
           {/* Content */}
           <div className="sw-content" ref={contentRef}>
             {ap.image && (
-              <img
+              <Image
                 key={`img-${activeTab}-${reloadKey}`}
                 src={ap.image}
                 alt={ap.name}
                 className="sw-poster"
+                width={1440}
+                height={900}
+                priority={activeTab === 0}
               />
             )}
             {ap.link && (

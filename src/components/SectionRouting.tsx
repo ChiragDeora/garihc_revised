@@ -15,6 +15,7 @@ export default function SectionRouting() {
   const prevPathnameRef = useRef<string | null>(null);
   const syncedPathRef = useRef(pathname);
   const scrollSyncReadyRef = useRef(pathname === "/");
+  const fromScrollRef = useRef(false);
 
   useEffect(() => {
     syncedPathRef.current = pathname;
@@ -23,6 +24,13 @@ export default function SectionRouting() {
   useEffect(() => {
     const prevPathname = prevPathnameRef.current;
     prevPathnameRef.current = pathname;
+
+    // Skip programmatic scroll if URL was changed by the scroll handler
+    if (fromScrollRef.current) {
+      fromScrollRef.current = false;
+      scrollSyncReadyRef.current = true;
+      return;
+    }
 
     if (pathname === "/") {
       scrollSyncReadyRef.current = true;
@@ -61,6 +69,7 @@ export default function SectionRouting() {
     const syncPath = (path: string) => {
       if (syncedPathRef.current === path) return;
       syncedPathRef.current = path;
+      fromScrollRef.current = true;
       router.replace(path, { scroll: false });
     };
 

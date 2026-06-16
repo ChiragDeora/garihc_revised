@@ -15,7 +15,7 @@ const cyclingItems = [
 ];
 
 function useTextScramble(text: string, delay: number = 0) {
-    const [display, setDisplay] = useState(text.split("").map(() => " "));
+    const [display, setDisplay] = useState(text.split(""));
     const [started, setStarted] = useState(false);
 
     const start = useCallback(() => {
@@ -48,6 +48,7 @@ function useTextScramble(text: string, delay: number = 0) {
 
 export default function Intro() {
     const [mounted, setMounted] = useState(false);
+    const [showCycling, setShowCycling] = useState(false);
     const { display, start } = useTextScramble(GARIHC, 300);
     const [cycleIndex, setCycleIndex] = useState(0);
     const [phase, setPhase] = useState<"scramble" | "cycling" | "reveal">("scramble");
@@ -55,13 +56,14 @@ export default function Intro() {
     useEffect(() => {
         setMounted(true);
         const timer = setTimeout(start, 500);
-        return () => clearTimeout(timer);
+        const cyclingTimer = setTimeout(() => setShowCycling(true), 1500);
+        return () => { clearTimeout(timer); clearTimeout(cyclingTimer); };
     }, [start]);
 
     // Start cycling after scramble completes
     useEffect(() => {
         if (!mounted) return;
-        const timer = setTimeout(() => setPhase("cycling"), 2200);
+        const timer = setTimeout(() => setPhase("cycling"), 2100);
         return () => clearTimeout(timer);
     }, [mounted]);
 
@@ -71,14 +73,13 @@ export default function Intro() {
         const timer = setInterval(() => {
             setCycleIndex((prev) => {
                 if (prev >= cyclingItems.length - 1) {
-                    // After last item, reveal the punchline
-                    setTimeout(() => setPhase("reveal"), 800);
+                    setTimeout(() => setPhase("reveal"), 750);
                     clearInterval(timer);
                     return prev;
                 }
                 return prev + 1;
             });
-        }, 1200);
+        }, 1150);
         return () => clearInterval(timer);
     }, [phase]);
 
@@ -133,29 +134,12 @@ export default function Intro() {
                         whiteSpace: "nowrap",
                     }}
                 >
-                    {display.map((char, i) => (
-                        <motion.span
-                            key={i}
-                            initial={{ opacity: 0 }}
-                            animate={mounted ? { opacity: 1 } : {}}
-                            transition={{ duration: 0.1, delay: 0.5 + i * 0.05 }}
-                            style={{
-                                display: "inline-block",
-                                minWidth: "0.6em",
-                                textAlign: "center",
-                            }}
-                        >
-                            {char}
-                        </motion.span>
-                    ))}
+                    {display.join("")}
                 </h1>
             </div>
 
-            {/* Cycling hero text */}
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={mounted ? { opacity: 1 } : {}}
-                transition={{ duration: 1, delay: 2.5 }}
+            {/* Cycling / reveal text — both always in DOM to prevent LCP and CLS issues */}
+            <div
                 style={{
                     position: "relative",
                     zIndex: 1,
@@ -168,181 +152,160 @@ export default function Intro() {
                     alignItems: "center",
                 }}
             >
-                <AnimatePresence mode="wait">
-                    {phase !== "reveal" ? (
-                        <motion.div
-                            key="cycling"
-                            initial={{ opacity: 1 }}
-                            exit={{
-                                opacity: 0,
-                                y: -20,
-                                transition: {
-                                    duration: 0.5,
-                                    ease: [0.32, 0.72, 0, 1],
-                                },
-                            }}
-                            style={{
-                                display: "flex",
-                                flexDirection: "column",
-                                alignItems: "center",
-                            }}
-                        >
-                            {/* "You think you need" - static */}
-                            <p
-                                style={{
-                                    fontFamily: "var(--font-outfit), sans-serif",
-                                    fontSize: "clamp(0.85rem, 1.4vw, 1.05rem)",
-                                    fontWeight: 300,
-                                    color: "var(--text-secondary)",
-                                    margin: "0 0 0.5rem 0",
-                                    letterSpacing: "0.02em",
-                                }}
-                            >
-                                You think you need
-                            </p>
-
-                            {/* Cycling word */}
-                            <div style={{ height: "3.5rem", overflow: "hidden", position: "relative" }}>
-                                <AnimatePresence mode="wait">
-                                    <motion.span
-                                        key={cycleIndex}
-                                        initial={{ opacity: 0, y: 30 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -30 }}
-                                        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                                        style={{
-                                            fontFamily: "var(--font-cormorant), serif",
-                                            fontSize: "clamp(1.6rem, 3.5vw, 2.4rem)",
-                                            fontWeight: 400,
-                                            color: "#F5F5F0",
-                                            display: "block",
-                                            whiteSpace: "nowrap",
-                                        }}
-                                    >
-                                        {cyclingItems[cycleIndex]}
-                                        <motion.span
-                                            animate={{ opacity: [1, 0] }}
-                                            transition={{
-                                                duration: 0.6,
-                                                repeat: Infinity,
-                                                repeatType: "reverse",
-                                            }}
-                                            style={{
-                                                display: "inline-block",
-                                                width: 2,
-                                                height: "1.2em",
-                                                background: "#C4663A",
-                                                marginLeft: 4,
-                                                verticalAlign: "text-bottom",
-                                            }}
-                                        />
-                                    </motion.span>
-                                </AnimatePresence>
-                            </div>
-                        </motion.div>
-                    ) : (
-                        /* Reveal - the punchline */
-                        <motion.div
-                            key="reveal"
-                            initial={{ opacity: 0, y: 24 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{
-                                duration: 1,
-                                ease: [0.32, 0.72, 0, 1],
-                            }}
-                            style={{ textAlign: "center" }}
-                        >
-                            <p
-                                style={{
-                                    fontFamily: "var(--font-cormorant), serif",
-                                    fontSize: "clamp(1.4rem, 3vw, 2.2rem)",
-                                    fontWeight: 400,
-                                    color: "#F5F5F0",
-                                    margin: 0,
-                                    lineHeight: 1.4,
-                                }}
-                            >
-                                You need someone who diagnoses
-                                <br />
-                                <span
-                                    style={{
-                                        background: "linear-gradient(135deg, #C4663A, #D4845A)",
-                                        WebkitBackgroundClip: "text",
-                                        WebkitTextFillColor: "transparent",
-                                        backgroundClip: "text",
-                                    }}
-                                >
-                                    the real problem and builds the whole solution.
-                                </span>
-                            </p>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-            </motion.div>
-
-            {/* Subline - appears after reveal */}
-            <AnimatePresence>
-                {phase === "reveal" && (
-                    <motion.p
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.8, delay: 0.6 }}
+                {/* Cycling content — fades out on reveal */}
+                <div
+                    style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        position: "absolute",
+                        inset: 0,
+                        opacity: phase !== "reveal" && showCycling ? 1 : 0,
+                        transform: phase === "reveal" ? "translateY(-20px)" : "translateY(0)",
+                        transition: "opacity 0.5s cubic-bezier(0.32,0.72,0,1), transform 0.5s cubic-bezier(0.32,0.72,0,1)",
+                        pointerEvents: phase !== "reveal" ? "auto" : "none",
+                    }}
+                >
+                    <p
                         style={{
-                            position: "relative",
-                            zIndex: 1,
                             fontFamily: "var(--font-outfit), sans-serif",
-                            fontSize: "clamp(0.75rem, 1.1vw, 0.9rem)",
+                            fontSize: "clamp(0.85rem, 1.4vw, 1.05rem)",
                             fontWeight: 300,
                             color: "var(--text-secondary)",
-                            marginTop: "1.5rem",
-                            letterSpacing: "0.05em",
-                            textAlign: "center",
+                            margin: "0 0 0.5rem 0",
+                            letterSpacing: "0.02em",
                         }}
                     >
-                        Strategy, AI, development, and design - all under one roof.
-                    </motion.p>
-                )}
-            </AnimatePresence>
+                        You think you need
+                    </p>
+                    <div style={{ height: "3.5rem", overflow: "hidden", position: "relative" }}>
+                        <AnimatePresence mode="wait">
+                            <motion.span
+                                key={cycleIndex}
+                                initial={{ opacity: 0, y: 30 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -30 }}
+                                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                                style={{
+                                    fontFamily: "var(--font-cormorant), serif",
+                                    fontSize: "clamp(1.6rem, 3.5vw, 2.4rem)",
+                                    fontWeight: 400,
+                                    color: "#F5F5F0",
+                                    display: "block",
+                                    whiteSpace: "nowrap",
+                                }}
+                            >
+                                {cyclingItems[cycleIndex]}
+                                <motion.span
+                                    animate={{ opacity: [1, 0] }}
+                                    transition={{
+                                        duration: 0.6,
+                                        repeat: Infinity,
+                                        repeatType: "reverse",
+                                    }}
+                                    style={{
+                                        display: "inline-block",
+                                        width: 2,
+                                        height: "1.2em",
+                                        background: "#C4663A",
+                                        marginLeft: 4,
+                                        verticalAlign: "text-bottom",
+                                    }}
+                                />
+                            </motion.span>
+                        </AnimatePresence>
+                    </div>
+                </div>
 
-            {/* CTA - appears after reveal */}
-            <AnimatePresence>
-                {phase === "reveal" && (
-                    <motion.div
-                        className="hero-cta-wrap"
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 1.2 }}
+                {/* Reveal punchline — always in DOM, fades in on reveal */}
+                <div
+                    style={{
+                        textAlign: "center",
+                        opacity: phase === "reveal" ? 1 : 0,
+                        transform: phase === "reveal" ? "translateY(0)" : "translateY(24px)",
+                        transition: "opacity 1s cubic-bezier(0.32,0.72,0,1), transform 1s cubic-bezier(0.32,0.72,0,1)",
+                    }}
+                >
+                    <p
                         style={{
-                            position: "relative",
-                            zIndex: 1,
-                            marginTop: "2.5rem",
+                            fontFamily: "var(--font-cormorant), serif",
+                            fontSize: "clamp(1.4rem, 3vw, 2.2rem)",
+                            fontWeight: 400,
+                            color: "#F5F5F0",
+                            margin: 0,
+                            lineHeight: 1.4,
                         }}
                     >
-                        <a
-                            href="/contact"
-                            className="btn-accent"
+                        You need someone who diagnoses
+                        <br />
+                        <span
                             style={{
-                                fontSize: "0.65rem",
-                                letterSpacing: "0.2em",
-                                padding: "14px 36px",
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.background = "transparent";
-                                e.currentTarget.style.color = "var(--accent-warm)";
-                                e.currentTarget.style.boxShadow =
-                                    "0 0 30px rgba(196,102,58,0.2)";
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.background = "var(--accent-warm)";
-                                e.currentTarget.style.color = "#FFFFFF";
-                                e.currentTarget.style.boxShadow = "none";
+                                background: "linear-gradient(135deg, #C4663A, #D4845A)",
+                                WebkitBackgroundClip: "text",
+                                WebkitTextFillColor: "transparent",
+                                backgroundClip: "text",
                             }}
                         >
-                            Let&apos;s start with a conversation
-                        </a>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                            the real problem and builds the whole solution.
+                        </span>
+                    </p>
+                </div>
+            </div>
+
+            {/* Subline — always in DOM to prevent CLS */}
+            <p
+                style={{
+                    position: "relative",
+                    zIndex: 1,
+                    fontFamily: "var(--font-outfit), sans-serif",
+                    fontSize: "clamp(0.75rem, 1.1vw, 0.9rem)",
+                    fontWeight: 300,
+                    color: "var(--text-secondary)",
+                    marginTop: "1.5rem",
+                    letterSpacing: "0.05em",
+                    textAlign: "center",
+                    opacity: phase === "reveal" ? 1 : 0,
+                    transition: "opacity 0.8s ease 0.6s",
+                }}
+            >
+                Strategy, AI, development, and design - all under one roof.
+            </p>
+
+            {/* CTA — always in DOM to prevent CLS */}
+            <div
+                className="hero-cta-wrap"
+                style={{
+                    position: "relative",
+                    zIndex: 1,
+                    marginTop: "2.5rem",
+                    opacity: phase === "reveal" ? 1 : 0,
+                    transform: phase === "reveal" ? "translateY(0)" : "translateY(10px)",
+                    transition: "opacity 0.6s ease 0.8s, transform 0.6s ease 0.8s",
+                }}
+            >
+                <a
+                    href="/contact"
+                    className="btn-accent"
+                    style={{
+                        fontSize: "0.65rem",
+                        letterSpacing: "0.2em",
+                        padding: "14px 36px",
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.background = "transparent";
+                        e.currentTarget.style.color = "var(--accent-warm)";
+                        e.currentTarget.style.boxShadow =
+                            "0 0 30px rgba(196,102,58,0.2)";
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.background = "var(--accent-warm)";
+                        e.currentTarget.style.color = "#FFFFFF";
+                        e.currentTarget.style.boxShadow = "none";
+                    }}
+                >
+                    Let&apos;s start with a conversation
+                </a>
+            </div>
 
             {/* Lattice morphs into arrow on scroll — replaces old Lottie arrow */}
         </section>

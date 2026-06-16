@@ -2,12 +2,28 @@
 
 import { useRef, useEffect, useState } from "react";
 import { motion, useInView } from "framer-motion";
-import { CALENDLY_URL, gmailComposeUrl } from "@/lib/contact";
+import Cal, { getCalApi } from "@calcom/embed-react";
+import { CAL_LINK, gmailComposeUrl, gmailComposeWithDetails } from "@/lib/contact";
 
 export default function Contact() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.05 });
   const [borderProgress, setBorderProgress] = useState(0);
+
+  useEffect(() => {
+    (async () => {
+      const cal = await getCalApi();
+      cal("ui", {
+        theme: "dark",
+        cssVarsPerTheme: {
+          dark: { "cal-brand": "#C4663A" },
+          light: { "cal-brand": "#C4663A" },
+        },
+        hideEventTypeDetails: false,
+        layout: "month_view",
+      });
+    })();
+  }, []);
 
   useEffect(() => {
     if (!isInView) return;
@@ -220,16 +236,16 @@ export default function Contact() {
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.7 }}
         >
-          <a
-            href={CALENDLY_URL}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            data-cal-link={CAL_LINK}
+            data-cal-config='{"layout":"month_view"}'
             className="btn-accent contact-cta-btn"
+            style={{ border: "none", cursor: "pointer" }}
           >
             Book a call
-          </a>
+          </button>
           <a
-            href={gmailComposeUrl(undefined, "New project — GARIHC")}
+            href={gmailComposeWithDetails()}
             target="_blank"
             rel="noopener noreferrer"
             className="btn-accent contact-cta-btn contact-cta-btn-secondary"

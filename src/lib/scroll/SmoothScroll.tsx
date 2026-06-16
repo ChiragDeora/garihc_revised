@@ -66,7 +66,7 @@ export default function SmoothScroll() {
       e.preventDefault();
       const path = getPathForSection(sectionId, window.location.pathname);
       router.replace(path, { scroll: false });
-      lenis.scrollTo(target, { offset: -8 });
+      lenis.scrollTo(target, { offset: -8, immediate: true });
     };
 
     document.addEventListener("click", onAnchorClick);
@@ -84,10 +84,10 @@ export default function SmoothScroll() {
 
 export function scrollToTop() {
   if (window.__lenis) {
-    window.__lenis.scrollTo(0);
+    window.__lenis.scrollTo(0, { immediate: true });
     return;
   }
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  window.scrollTo({ top: 0, behavior: "instant" });
 }
 
 export function scrollToElement(selector: string, offset = -8) {
@@ -95,9 +95,9 @@ export function scrollToElement(selector: string, offset = -8) {
   if (!target) return;
 
   if (window.__lenis) {
-    window.__lenis.scrollTo(target as HTMLElement, { offset });
+    window.__lenis.scrollTo(target as HTMLElement, { offset, immediate: true });
     return;
   }
 
-  target.scrollIntoView({ behavior: "smooth" });
+  target.scrollIntoView({ behavior: "instant" });
 }

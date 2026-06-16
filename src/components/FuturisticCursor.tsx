@@ -6,12 +6,12 @@ export default function FuturisticCursor() {
   const cursorRef = useRef<HTMLDivElement>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
+  const [isOverBrowser, setIsOverBrowser] = useState(false);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       setMousePos({ x: e.clientX, y: e.clientY });
 
-      // Check if hovering over interactive elements
       const target = e.target as HTMLElement;
       const isInteractive =
         target.tagName === "A" ||
@@ -21,6 +21,14 @@ export default function FuturisticCursor() {
         target.closest("button");
 
       setIsHovering(!!isInteractive);
+
+      // Hide custom cursor when over the browser iframe/content area
+      const overBrowser = !!(
+        target.tagName === "IFRAME" ||
+        target.closest(".sw-content") ||
+        target.closest(".sw-iframe")
+      );
+      setIsOverBrowser(overBrowser);
     };
 
     window.addEventListener("mousemove", handleMouseMove);
@@ -48,7 +56,7 @@ export default function FuturisticCursor() {
           left: `${mousePos.x}px`,
           top: `${mousePos.y}px`,
           transform: `translate(-50%, -50%) scale(${isHovering ? 1.4 : 1})`,
-          opacity: isHovering ? 1 : 0.7,
+          opacity: isOverBrowser ? 0 : isHovering ? 1 : 0.7,
         }}
       >
         {/* Core dot */}

@@ -459,6 +459,8 @@ a:not(.btn-accent):hover {
   z-index: 10000;
   transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1),
               opacity 0.2s ease;
+  will-change: left, top;
+  transform: translateZ(0);
 }
 
 .cursor-core {
@@ -1082,6 +1084,11 @@ a:not(.btn-accent):hover {
   border: 0;
   background: #fff;
   z-index: 1;
+  cursor: auto !important;
+}
+
+.sw-content {
+  cursor: auto !important;
 }
 
 /* Tab favicon image */

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { scrollToElement, scrollToTop } from "@/lib/scroll";
 import {
@@ -257,7 +258,7 @@ export default function Navigation() {
                 textDecoration: "none",
               }}
             >
-              <img src="/logo-light.png" alt="" className="nav-logo-img" style={{ height: 26, width: "auto" }} />
+              <Image src="/logo-light.png" alt="" className="nav-logo-img" width={26} height={26} style={{ height: 26, width: "auto" }} />
               <span className="nav-logo-text" style={{ fontFamily: "var(--font-cormorant), serif", fontSize: "1rem", letterSpacing: "0.24em", fontWeight: 600, color: "#F5F5F0" }}>GARIHC</span>
             </a>
             {/* <div style={{ position: "absolute", right: 48, display: "flex", alignItems: "center" }}>
@@ -389,7 +390,7 @@ export default function Navigation() {
             gap: "0.5rem",
           }}
         >
-          <img src="/logo-light.png" alt="" className="nav-logo-img" style={{ height: 32, width: "auto" }} />
+          <Image src="/logo-light.png" alt="" className="nav-logo-img" width={32} height={32} style={{ height: 32, width: "auto" }} />
           <span className="nav-logo-text" style={{ fontFamily: "var(--font-cormorant), serif", fontSize: "1.1rem", letterSpacing: "0.3em", fontWeight: 600, color: "#F5F5F0" }}>GARIHC</span>
         </a>
         <div style={{ width: 1, height: 20, background: "rgba(255,255,255,0.1)" }} />

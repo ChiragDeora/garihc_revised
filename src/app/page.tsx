@@ -1,15 +1,16 @@
+import dynamic from "next/dynamic";
 import Intro from "@/components/Intro";
 import Navigation from "@/components/Navigation";
-import Services from "@/components/Services";
-import SelectedWork from "@/components/SelectedWork";
-import GarihcMeaning from "@/components/GarihcMeaning";
-import About from "@/components/About";
-import Contact from "@/components/Contact";
-import Footer from "@/components/Footer";
 import FuturisticCursor from "@/components/FuturisticCursor";
 import SectionRouting from "@/components/SectionRouting";
 import { SmoothScroll } from "@/lib/scroll";
-import ChatWidget from "@/components/ChatWidget";
+
+const SelectedWork = dynamic(() => import("@/components/SelectedWork"));
+const About = dynamic(() => import("@/components/About"));
+const Services = dynamic(() => import("@/components/Services"));
+const Contact = dynamic(() => import("@/components/Contact"));
+const Footer = dynamic(() => import("@/components/Footer"));
+const ChatWidget = dynamic(() => import("@/components/ChatWidget"));
 
 export default function Home() {
   return (

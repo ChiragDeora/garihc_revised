@@ -1,6 +1,6 @@
 "use client";
 
-import { CALENDLY_URL, gmailComposeUrl } from "@/lib/contact";
+import { CAL_LINK, gmailComposeUrl } from "@/lib/contact";
 
 export default function Footer() {
   const currentMonth = new Date().toLocaleString("default", { month: "long" });
@@ -46,16 +46,16 @@ export default function Footer() {
           >
             Email for work.
           </a>
-          <a
-            href={CALENDLY_URL}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            data-cal-link={CAL_LINK}
+            data-cal-config='{"layout":"month_view"}'
             className="footer-cta-link footer-cta-link-availability"
+            style={{ background: "none", border: "none", cursor: "pointer" }}
           >
             <span className="footer-cta-dot" />
             <span className="footer-month-full">Available for {currentMonth}</span>
             <span className="footer-month-short">Avail. {currentMonthShort}</span>
-          </a>
+          </button>
         </div>
       </div>
 

@@ -1,5 +1,5 @@
 export const CONTACT_EMAIL = "info@garihc.com";
-export const CALENDLY_URL = "https://calendly.com/chiragdeora";
+export const CAL_LINK = "chirag-deora/30min";
 
 /** Opens Gmail compose in a new browser tab instead of the system mail client. */
 export function gmailComposeUrl(
@@ -11,4 +11,21 @@ export function gmailComposeUrl(
   if (subject) params.set("su", subject);
   if (body) params.set("body", body);
   return `https://mail.google.com/mail/?${params.toString()}`;
+}
+
+export function gmailComposeWithDetails(
+  subject = "New project — GARIHC"
+): string {
+  const body = [
+    "Hi GARIHC,",
+    "",
+    "Company: ",
+    "Designation: ",
+    "Project budget (approx): ",
+    "Expected timeline: ",
+    "",
+    "Brief about the project:",
+    "",
+  ].join("\n");
+  return gmailComposeUrl(CONTACT_EMAIL, subject, body);
 }
