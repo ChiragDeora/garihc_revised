@@ -229,7 +229,7 @@ export default function Contact() {
         </motion.div>
         */}
 
-        {/* CTA — two ways to start */}
+        {/* CTA  - two ways to start */}
         <motion.div
           className="contact-cta-actions"
           initial={{ opacity: 0, y: 15 }}

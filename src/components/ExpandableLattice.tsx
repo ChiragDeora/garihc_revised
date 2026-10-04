@@ -5,6 +5,7 @@ import { useEffect, useRef } from "react";
 interface LatticeProps {
   className?: string;
   style?: React.CSSProperties;
+  contentEndRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 const GOLD = { r: 201, g: 119, b: 69 };
@@ -25,7 +26,7 @@ function fibSphere(n: number) {
   return pts;
 }
 
-// Chevron target positions — particles line up along two V arms
+// Chevron target positions  - particles line up along two V arms
 function buildChevronTargets(n: number, cx: number, cy: number) {
   const targets: { x: number; y: number }[] = [];
   const armW = 20;
@@ -46,7 +47,7 @@ function buildChevronTargets(n: number, cx: number, cy: number) {
   return targets;
 }
 
-export default function ExpandableLattice({ className, style }: LatticeProps) {
+export default function ExpandableLattice({ className, style, contentEndRef }: LatticeProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const stateRef = useRef({
     scrollProgress: 0,
@@ -83,7 +84,16 @@ export default function ExpandableLattice({ className, style }: LatticeProps) {
       canvas!.width = s.width * s.dpr;
       canvas!.height = s.height * s.dpr;
       ctx!.setTransform(s.dpr, 0, 0, s.dpr, 0, 0);
-      chevronCy = s.height * 0.86;
+
+      const canvasRect = canvas!.getBoundingClientRect();
+      if (contentEndRef?.current) {
+        const endRect = contentEndRef.current.getBoundingClientRect();
+        const bottomRelative = endRect.bottom - canvasRect.top;
+        const maxCy = s.height - 60;
+        chevronCy = Math.min(bottomRelative + 20, maxCy);
+      } else {
+        chevronCy = s.height - 60;
+      }
       chevronTgts = buildChevronTargets(NUM_POINTS, s.width / 2, chevronCy);
     }
 
@@ -118,7 +128,7 @@ export default function ExpandableLattice({ className, style }: LatticeProps) {
       else { s.smx += (s.mouseX - s.smx) * 0.07; s.smy += (s.mouseY - s.smy) * 0.07; }
       const mx = s.smx, my = s.smy;
 
-      const sphereR = Math.min(w, h) * 0.44;
+      const sphereR = h * 0.44;
 
       const rotY = s.time * 0.3;
       const rotX = Math.sin(s.time * 0.15) * 0.4;
@@ -224,7 +234,7 @@ export default function ExpandableLattice({ className, style }: LatticeProps) {
       ctx!.fillStyle = grad;
       ctx!.fillRect(0, 0, w, h);
 
-      // Clean stroked chevron on top — hides particle mess underneath
+      // Clean stroked chevron on top  - hides particle mess underneath
       if (sp > 0.15) {
         const a = Math.min((sp - 0.15) / 0.4, 1);
         const armW = 20, armH = 12;

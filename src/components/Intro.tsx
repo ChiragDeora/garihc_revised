@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ExpandableLattice from "./ExpandableLattice";
 
@@ -47,6 +47,7 @@ function useTextScramble(text: string, delay: number = 0) {
 }
 
 export default function Intro() {
+    const ctaEndRef = useRef<HTMLDivElement>(null);
     const [mounted, setMounted] = useState(false);
     const [showCycling, setShowCycling] = useState(false);
     const { display, start } = useTextScramble(GARIHC, 300);
@@ -100,7 +101,7 @@ export default function Intro() {
                 boxSizing: "border-box",
             }}
         >
-            <ExpandableLattice />
+            <ExpandableLattice contentEndRef={ctaEndRef} />
 
             {/* Central glow */}
             <motion.div
@@ -138,7 +139,7 @@ export default function Intro() {
                 </h1>
             </div>
 
-            {/* Cycling / reveal text — both always in DOM to prevent LCP and CLS issues */}
+            {/* Cycling / reveal text  - both always in DOM to prevent LCP and CLS issues */}
             <div
                 style={{
                     position: "relative",
@@ -152,7 +153,7 @@ export default function Intro() {
                     alignItems: "center",
                 }}
             >
-                {/* Cycling content — fades out on reveal */}
+                {/* Cycling content  - fades out on reveal */}
                 <div
                     style={{
                         display: "flex",
@@ -217,7 +218,7 @@ export default function Intro() {
                     </div>
                 </div>
 
-                {/* Reveal punchline — always in DOM, fades in on reveal */}
+                {/* Reveal punchline  - always in DOM, fades in on reveal */}
                 <div
                     style={{
                         textAlign: "center",
@@ -252,7 +253,7 @@ export default function Intro() {
                 </div>
             </div>
 
-            {/* Subline — always in DOM to prevent CLS */}
+            {/* Subline  - always in DOM to prevent CLS */}
             <p
                 style={{
                     position: "relative",
@@ -271,8 +272,9 @@ export default function Intro() {
                 Strategy, AI, development, and design - all under one roof.
             </p>
 
-            {/* CTA — always in DOM to prevent CLS */}
+            {/* CTA  - always in DOM to prevent CLS */}
             <div
+                ref={ctaEndRef}
                 className="hero-cta-wrap"
                 style={{
                     position: "relative",
@@ -307,7 +309,7 @@ export default function Intro() {
                 </a>
             </div>
 
-            {/* Lattice morphs into arrow on scroll — replaces old Lottie arrow */}
+            {/* Lattice morphs into arrow on scroll  - replaces old Lottie arrow */}
         </section>
     );
 }

@@ -23,7 +23,7 @@ export default function SelectedWork() {
   const pathname = usePathname();
   const initialProjectIndex = getInitialProjectIndex();
 
-  const [openTabs, setOpenTabs] = useState([0, 1, 2, 3]);
+  const [openTabs, setOpenTabs] = useState([0, 1, 2, 3, 4, 5]);
   const [activeTab, setActiveTab] = useState(initialProjectIndex);
   const [history, setHistory] = useState([initialProjectIndex]);
   const [histPos, setHistPos] = useState(0);

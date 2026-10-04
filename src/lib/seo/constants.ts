@@ -2,7 +2,7 @@ export const SITE_URL = "https://garihc.com";
 
 export const SITE_NAME = "GARIHC";
 
-export const SITE_TITLE = "GARIHC — Premium digital systems for ambitious brands.";
+export const SITE_TITLE = "GARIHC  - Premium digital systems for ambitious brands.";
 
 export const SITE_DESCRIPTION =
   "GARIHC builds refined websites, platforms, and AI-powered workflows that help businesses look sharper, move faster, and sell better.";

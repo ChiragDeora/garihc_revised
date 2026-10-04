@@ -14,7 +14,7 @@ export function gmailComposeUrl(
 }
 
 export function gmailComposeWithDetails(
-  subject = "New project — GARIHC"
+  subject = "New project  - GARIHC"
 ): string {
   const body = [
     "Hi GARIHC,",

@@ -39,7 +39,7 @@ export default function Footer() {
           }}
         >
           <a
-            href={gmailComposeUrl(undefined, "Work inquiry — GARIHC")}
+            href={gmailComposeUrl(undefined, "Work inquiry  - GARIHC")}
             target="_blank"
             rel="noopener noreferrer"
             className="footer-cta-link footer-cta-link-email"
